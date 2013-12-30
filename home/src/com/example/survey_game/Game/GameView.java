@@ -104,7 +104,7 @@ public class GameView extends SurfaceView {
 	public CountDownTimer timer;
 
 	SharedPreferences preference;
-	private GameActivity activity;
+	private static GameActivity activity;
 
 	private List<CompFeature> compList;
 	private long millisRemaining = 1 * 30000;
@@ -162,6 +162,7 @@ public class GameView extends SurfaceView {
 		return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
 
 	}*/
+	private SharedPreferences preference1;
 
 	public void cleanUp() {
 
@@ -985,30 +986,82 @@ public class GameView extends SurfaceView {
 		 * TODO Auto-generated catch block e.printStackTrace(); }
 		 */
 		bundle.putInt("count", count);
+		global.setCount(count);
 		/*
 		 * if(ballons.size()>0){ for(int i=0;i<ballons.size();i++)
 		 * bundle.putSerializable("ballons_"+i, ballons.get(i)); }
 		 */
 		bundle.putLong("time", millisRemaining);
-
-		gameLoopThread.paused = true;
+		global.setMillisremaining(millisRemaining);
+		bundle.putInt("score", scorenumber);
+		global.setScorenumber(scorenumber);
+		bundle.putInt("bonuscount", ballcount);
+		global.setBallcount(ballcount);
+		saveFeatureList(bundle);
+		GameThread.paused = true;
 		// timer.pause();
+		if(preference1.getBoolean("restart", false))
+			gameLoopThread.setRunning(false);
+		else
 		stop();
 		timerpause = true;
 		paused = true;
 	}
+	public void saveFeatureList(Bundle b)
+	{
+		
+	    
+	    b.putInt("Feature_size",featureList.size()); /* sKey is an array */ 
 
+	    global.setFeatureList(featureList);
+	    for(int i=0;i<featureList.size();i++)  
+	    {
+	        b.putSerializable("feature_"+i, featureList.get(i));
+	    }
+	    b.putInt("Server_size", list.size());
+	    global.setList(list);
+	    for(int i=0;i<list.size();i++)  
+	    {
+	        b.putSerializable("list_"+i, list.get(i));
+	    }
+
+	}
 	public void resume() {
 		// gameLoopThread.notifyAll();
 		//ballcount = 0;
-		count = bundle.getInt("count", count);
+		count = global.getCount();//bundle.getInt("count", count);
 		/*
 		 * if(ballons.size()>0){ ballons.clear(); for(int i=0;i<5;i++){
 		 * ballons.add((Ballons)bundle.getSerializable("ballons_"+i)); } }
 		 */
-		millisRemaining = bundle.getLong("time");
+		millisRemaining = global.getMillisremaining();//bundle.getLong("time");
 		paused = false;
-
+		scorenumber = global.getScorenumber();//bundle.getInt("score");
+		ballcount = global.getBallcount();//bundle.getInt("bonuscount");
+		int featureSize = bundle.getInt("Feature_size"); 
+		if(featureList!= null && featureList.size()>0){
+			featureList.clear();
+		
+		}else {
+			featureList = new ArrayList<Feature>();
+		}
+		featureList = global.getFeatureList();
+	    /*for(int i=0;i<featureSize;i++)  
+	    {
+	        featureList.add((Feature) bundle.getSerializable("feature_"+i));
+	    }*/
+	    int serverSize = bundle.getInt("Server_size"); 
+		if(list!= null && list.size()>0){
+			list.clear();
+		}else {
+			list = new ArrayList<ServerData>();
+		}
+		list = global.getList();
+	    /*for(int i=0;i<serverSize;i++)  
+	    {
+	        list.add((ServerData) bundle.getSerializable("list_"+i));
+	    }*/
+		
 		timerpause = false;
 		countDownTimer(millisRemaining);
 		timer.start();
@@ -1223,7 +1276,11 @@ public class GameView extends SurfaceView {
 		} else {
 			// cleanUp();
 		}
-
+		preference1 = activity.getSharedPreferences("Survey", Context.MODE_PRIVATE);
+		if(preference1.getBoolean("restart", false)){
+			pause();
+			preference1.edit().putBoolean("restart", false).commit();
+		}
 	}
 
 	public boolean isPaused() {

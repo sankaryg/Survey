@@ -1,6 +1,8 @@
 package com.example.survey_game_fuction;
 
-public class ServerData {
+import java.io.Serializable;
+
+public class ServerData implements Serializable {
 
 	private int id;
 	private String contra_Feature;
