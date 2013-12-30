@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="syncTheme">
+        <item name="theme1">Theme1</item>
+        <item name="theme2">theme2</item>
+        <item name="theme3">theme3</item>
+        <item name="theme4">theme4</item>
+        <item name="theme5">No theme</item>
+    </string-array>
+	<string-array name="syncThemeValues">
+        <item name="0">0</item>
+        <item name="1">1</item>
+        <item name="2">2</item>
+        <item name="3">3</item>
+        <item name="4">4</item>
+    </string-array>
+	<string-array name="syncSpeed">
+        <item name="low">LOW</item>
+        <item name="medium">MEDIUM</item>
+        <item name="high">HIGH</item>
+        
+    </string-array>
+	<string-array name="syncSpeedValues">
+        <item name="low">0</item>
+        <item name="medium">1</item>
+        <item name="high">2</item>
+    </string-array>
+    <string-array name="syncTimer">
+        <item name="low">30 seconds</item>
+        <item name="medium">40 seconds</item>
+        <item name="high">60 seconds</item>
+        
+    </string-array>
+	<string-array name="syncTimerValues">
+        <item name="low">0</item>
+        <item name="medium">1</item>
+        <item name="high">2</item>
+    </string-array>
+    <string-array name="syncFont">
+        <item name="font1">Oxida Alternate</item>
+        <item name="font2">Oxida Regular</item>
+        <item name="font3">predator_0</item>
+        <item name="font4">Punk kid</item>
+        <item name="font5">romeo</item>
+    </string-array>
+	<string-array name="syncFontValues">
+        <item name="0">0</item>
+        <item name="1">1</item>
+        <item name="2">2</item>
+        <item name="3">3</item>
+        <item name="4">4</item>
+    </string-array>
+</resources>

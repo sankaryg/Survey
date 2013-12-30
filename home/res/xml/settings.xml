@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto" >
+
+    <PreferenceCategory android:title="Theme" >
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/syncTheme"
+            android:entryValues="@array/syncThemeValues"
+            android:key="prefSyncThems"
+            android:summary="Set theme "
+            android:title="Select theme" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Timer" >
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/syncTimer"
+            android:entryValues="@array/syncTimerValues"
+            android:key="prefSyncTimer"
+            android:summary="Set time "
+            android:title="Select time limit" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Ballon Speed" >
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/syncSpeed"
+            android:entryValues="@array/syncSpeedValues"
+            android:key="prefSyncSpeed"
+            android:summary="Set Ballon speed"
+            android:title="Select speed" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Font" >
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/syncFont"
+            android:entryValues="@array/syncFontValues"
+            android:key="prefSyncFont"
+            android:summary="Set Font"
+            android:title="Select font" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Game Font Size" >
+        <com.example.survey_game.Util.SeekBarDialogPreference
+            android:defaultValue="12"
+            android:dialogMessage="Please select a value for increase font size:"
+            android:max="64"
+            android:key="prefSyncFontSize"
+           	android:title="Set the game font size"
+            custom:min="12"
+            custom:progressTextSuffix="" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
