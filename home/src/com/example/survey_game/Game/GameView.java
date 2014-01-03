@@ -163,6 +163,7 @@ public class GameView extends SurfaceView {
 
 	}*/
 	private SharedPreferences preference1;
+	private SharedPreferences sharedPrefs;
 
 	public void cleanUp() {
 
@@ -272,7 +273,49 @@ public class GameView extends SurfaceView {
 
 		super(context);
 		end = false;
-		count = 0;
+		gameview = this;
+		activity = (GameActivity) context;
+		sharedPrefs = PreferenceManager
+				.getDefaultSharedPreferences(activity);
+		int bg = Constants.themes[Integer.parseInt((sharedPrefs.getString(
+				"prefSyncThems", "NULL") == "NULL") ? "0" : sharedPrefs
+				.getString("prefSyncThems", "NULL"))];
+		time = Constants.time[Integer.parseInt((sharedPrefs.getString(
+				"prefSyncTimer", "NULL") == "NULL") ? "0" : sharedPrefs
+				.getString("prefSyncTimer", "NULL"))];
+		speed = Constants.speed[Integer.parseInt((sharedPrefs.getString(
+				"prefSyncSpeed", "NULL") == "NULL") ? "0" : sharedPrefs
+				.getString("prefSyncSpeed", "NULL"))];
+		font = Constants.fonts[Integer.parseInt((sharedPrefs.getString(
+				"prefSyncFont", "NULL") == "NULL") ? "0" : sharedPrefs
+				.getString("prefSyncFont", "NULL"))];
+		fontsize = sharedPrefs.getInt("prefSyncFontSize", 0);
+		preference1 = activity.getSharedPreferences("Survey", Context.MODE_PRIVATE);
+		db = new DBfunction(context);
+		global = (Global) getContext().getApplicationContext();
+		if(preference1.getBoolean("restart", false)){
+			
+			count = global.getCount();
+			
+			millisRemaining = global.getMillisremaining();
+			
+			scorenumber = global.getScorenumber();
+			
+			ballcount = global.getBallcount();
+			featureList = global.getFeatureList();
+			 if(featureList == null)
+				 featureList = db.retriveFeature();
+			list = global.getList();
+			
+			}else{
+			count = 0;	
+			millisRemaining = time;
+			scorenumber = 0;
+			ballcount = 0;
+			featureList = db.retriveFeature();
+			
+		}
+		
 		Constants.noneUsed = false;
 		Constants.checkFinish = false;
 		bundle = new Bundle();
@@ -280,18 +323,14 @@ public class GameView extends SurfaceView {
 		bid = bname;
 		this.uid = uid;
 		this.pid = pid;
-		scorenumber = 0;
-		ballcount = 0;
-		db = new DBfunction(context);
-		featureList = db.retriveFeature();
+		
 		compList = db.retriveCompFeature();
 		contraList = db.retriveContraFeature();
 		score = new ArrayList<Score>();
 		enemies = new ArrayList<Enemy>();
 
 		gameLoopThread = new GameThread(this);
-		gameview = this;
-		activity = (GameActivity) context;
+		
 		mTextPen = new Paint();
 		mTextPen.setAntiAlias(true);
 		mTextPen.setStyle(Style.STROKE);
@@ -318,23 +357,9 @@ public class GameView extends SurfaceView {
 		} else
 			str = "new";
 
-		SharedPreferences sharedPrefs = PreferenceManager
-				.getDefaultSharedPreferences(activity);
-		int bg = Constants.themes[Integer.parseInt((sharedPrefs.getString(
-				"prefSyncThems", "NULL") == "NULL") ? "0" : sharedPrefs
-				.getString("prefSyncThems", "NULL"))];
-		time = Constants.time[Integer.parseInt((sharedPrefs.getString(
-				"prefSyncTimer", "NULL") == "NULL") ? "0" : sharedPrefs
-				.getString("prefSyncTimer", "NULL"))];
-		speed = Constants.speed[Integer.parseInt((sharedPrefs.getString(
-				"prefSyncSpeed", "NULL") == "NULL") ? "0" : sharedPrefs
-				.getString("prefSyncSpeed", "NULL"))];
-		font = Constants.fonts[Integer.parseInt((sharedPrefs.getString(
-				"prefSyncFont", "NULL") == "NULL") ? "0" : sharedPrefs
-				.getString("prefSyncFont", "NULL"))];
-		fontsize = sharedPrefs.getInt("prefSyncFontSize", 0);
-		millisRemaining = time;
+		
 		countDownTimer(millisRemaining);
+		timer.start();
 		Typeface tf = Typeface.createFromAsset(getContext().getAssets(), font);
 		mTextPen.setTypeface(tf);
 		if (bg == R.drawable.notheme) {
@@ -351,7 +376,7 @@ public class GameView extends SurfaceView {
 					* (activity.getResources().getDisplayMetrics().density));
 		}
 		
-		global = (Global) getContext().getApplicationContext();
+		
 		alert = new ShowAlert(context);
 		bundle.putInt("count", count);
 		if (ballons.size() > 0) {
@@ -524,7 +549,7 @@ public class GameView extends SurfaceView {
 			 * } } }
 			 */
 			ballons.add(new Ballons(this, bmp, bmp.getWidth()/16, 30,
-					feature, Integer.parseInt(speed) , font,
+					feature, Float.parseFloat(speed) , font,
 					fontsize));
 
 		}
@@ -1014,16 +1039,16 @@ public class GameView extends SurfaceView {
 	    b.putInt("Feature_size",featureList.size()); /* sKey is an array */ 
 
 	    global.setFeatureList(featureList);
-	    for(int i=0;i<featureList.size();i++)  
+	    /*for(int i=0;i<featureList.size();i++)  
 	    {
 	        b.putSerializable("feature_"+i, featureList.get(i));
-	    }
-	    b.putInt("Server_size", list.size());
+	    }*/
+	    //b.putInt("Server_size", list.size());
 	    global.setList(list);
-	    for(int i=0;i<list.size();i++)  
+	    /*for(int i=0;i<list.size();i++)  
 	    {
 	        b.putSerializable("list_"+i, list.get(i));
-	    }
+	    }*/
 
 	}
 	public void resume() {
@@ -1038,24 +1063,25 @@ public class GameView extends SurfaceView {
 		paused = false;
 		scorenumber = global.getScorenumber();//bundle.getInt("score");
 		ballcount = global.getBallcount();//bundle.getInt("bonuscount");
-		int featureSize = bundle.getInt("Feature_size"); 
+		/*int featureSize = bundle.getInt("Feature_size"); 
 		if(featureList!= null && featureList.size()>0){
 			featureList.clear();
 		
 		}else {
 			featureList = new ArrayList<Feature>();
-		}
+		}*/
 		featureList = global.getFeatureList();
 	    /*for(int i=0;i<featureSize;i++)  
 	    {
 	        featureList.add((Feature) bundle.getSerializable("feature_"+i));
 	    }*/
-	    int serverSize = bundle.getInt("Server_size"); 
+	    /*int serverSize = bundle.getInt("Server_size"); 
 		if(list!= null && list.size()>0){
 			list.clear();
 		}else {
 			list = new ArrayList<ServerData>();
 		}
+		*/
 		list = global.getList();
 	    /*for(int i=0;i<serverSize;i++)  
 	    {
@@ -1063,8 +1089,10 @@ public class GameView extends SurfaceView {
 	    }*/
 		
 		timerpause = false;
+		if(!preference1.getBoolean("restart", false)){
 		countDownTimer(millisRemaining);
 		timer.start();
+		}
 		gameLoopThread.paused = false;
 		if (!gameLoopThread.isAlive()) {
 
@@ -1087,8 +1115,10 @@ public class GameView extends SurfaceView {
 		millisRemaining = bundle.getLong("time");
 		// paused = false;
 		timerpause = false;
+		if(!preference1.getBoolean("restart", false)){
 		countDownTimer(millisRemaining);
 		timer.start();
+		}
 	}
 
 	public Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
@@ -1210,6 +1240,9 @@ public class GameView extends SurfaceView {
 												ballons.get(i)
 														.setRemove(remove);
 												// ballons.remove(i);
+												time = Constants.time[Integer.parseInt((sharedPrefs.getString(
+														"prefSyncTimer", "NULL") == "NULL") ? "0" : sharedPrefs
+														.getString("prefSyncTimer", "NULL"))];
 												millisRemaining = time;
 												ballons.clear();
 												timer.start();
@@ -1276,7 +1309,6 @@ public class GameView extends SurfaceView {
 		} else {
 			// cleanUp();
 		}
-		preference1 = activity.getSharedPreferences("Survey", Context.MODE_PRIVATE);
 		if(preference1.getBoolean("restart", false)){
 			pause();
 			preference1.edit().putBoolean("restart", false).commit();
@@ -1299,9 +1331,14 @@ public class GameView extends SurfaceView {
 			for (int i = 0; i < ballons.size(); i++) {
 				for (int j = 0; j < ballons.size(); j++) {
 					if (i < j) {
+						try{
 						ballons.get(i).intersect(ballons.get(j), tMin);
 						if (ballons.get(i).earliestCollisionResponse.t < tMin) {
 							tMin = ballons.get(i).earliestCollisionResponse.t;
+						}
+						}catch (Exception e) {
+							// TODO: handle exception
+							e.printStackTrace();
 						}
 					}
 				}

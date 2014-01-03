@@ -38,6 +38,8 @@ public class MainGamePanel extends SurfaceView implements
 	private String avgFps;
 	Bitmap bg;
 
+	private int id;
+
 	public void setAvgFps(String avgFps) {
 		this.avgFps = avgFps;
 	}
@@ -66,11 +68,17 @@ public class MainGamePanel extends SurfaceView implements
 		//getHolder().setFormat(PixelFormat.TRANSPARENT);
 		// create Elaine and load bitmap
 		//if(!Constants.threeBalloons)
+		if(Constants.endScreen.equals("rookie")){
+			id = R.drawable.rookie;
+		}else if(Constants.endScreen.equals("pro")){
+			id = R.drawable.pro;
+		}else if(Constants.endScreen.equals("expert"))
+			id = R.drawable.expert;
 		elaine = new ElaineAnimated(BitmapFactory.decodeResource(
-				getResources(), R.drawable.cup_seq), 0, 0 // initial
+				getResources(),id), 0, 0 // initial
 																// position
-				, 220, 221 // width and height of sprite
-				, 5, 14); // FPS and number of frames in the animation
+				, 391, 400 // width and height of sprite
+				, 5, 8); // FPS and number of frames in the animation
 		/*else
 			elaine = new ElaineAnimated(BitmapFactory.decodeResource(
 					getResources(), R.drawable.bonus_seq), 0, 0 // initial

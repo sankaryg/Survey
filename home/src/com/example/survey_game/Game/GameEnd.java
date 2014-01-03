@@ -73,8 +73,8 @@ public class GameEnd extends Activity{
 	private AlertDialog alertDialog;
 	Global global;
 	private List<Upload> uploadList;
-	//MainGamePanel coin_rotate;
-	ImageView coin_rotate;
+	MainGamePanel coin_rotate;
+	//ImageView coin_rotate;
 	private AnimationDrawable anima;
 	private LinearLayout layout;
 	
@@ -96,7 +96,7 @@ public class GameEnd extends Activity{
 		//SurfaceHolder sfhTrackHolder = coin_rotate.getHolder();
 		//sfhTrackHolder.setFormat(PixelFormat.TRANSPARENT);
 		//coin_rotate.setAsset("piggy.gif");
-		coin_rotate = (ImageView) findViewById(R.id.imagecoin);
+		//coin_rotate = (ImageView) findViewById(R.id.imagecoin);
 		if(getIntent().getExtras()!=null){
 	        bname = getIntent().getExtras().getString("bname");
 	        bid = getIntent().getExtras().getString("bid");
@@ -105,15 +105,24 @@ public class GameEnd extends Activity{
 		}
 		if(score < 0){
 			score = 0;
-			coin_rotate.setImageResource(R.drawable.rookie);
+			Constants.endScreen = "rookie";
+			//coin_rotate.setImageResource(R.drawable.rookie);
 		}
 		else if(score <= (Constants.maxScore * 0.5)){
-			coin_rotate.setImageResource(R.drawable.rookie);
+			Constants.endScreen = "rookie";
+			//coin_rotate.setImageResource(R.drawable.rookie);
 		}else if( score <= (Constants.maxScore * 0.8) && score > (Constants.maxScore * 0.5)){
-			coin_rotate.setImageResource(R.drawable.pro);
+			Constants.endScreen = "pro";
+			//coin_rotate.setImageResource(R.drawable.pro);
 		}else if(score > (Constants.maxScore * 0.8) ){//&& score <= Constants.maxScore
-			coin_rotate.setImageResource(R.drawable.expert);
+			Constants.endScreen = "expert";
+			//coin_rotate.setImageResource(R.drawable.expert);
 		}
+
+		coin_rotate = (MainGamePanel) findViewById(R.id.imagecoin);
+		coin_rotate.setZOrderOnTop(true);    // necessary
+		SurfaceHolder sfhTrackHolder = coin_rotate.getHolder();
+		sfhTrackHolder.setFormat(PixelFormat.TRANSPARENT);
 		alert = new ShowAlert(this);
 		brand = (ImageView) findViewById(R.id.btnBrand);
 		scoreTet.setText(String.valueOf(score));
@@ -139,7 +148,7 @@ public class GameEnd extends Activity{
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				//coin_rotate.stop();
+				coin_rotate.stop();
 				Editor edit = preference.edit();
 				edit.putInt("upload", 2);
 				edit.putInt("playMode", 2);
@@ -157,7 +166,7 @@ public class GameEnd extends Activity{
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				//coin_rotate.stop();
+				coin_rotate.stop();
 				if(count != 2){
 					Editor edit = preference.edit();
 					edit.putInt("playMode", ++count);
@@ -180,7 +189,7 @@ public class GameEnd extends Activity{
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				//coin_rotate.stop();
+				coin_rotate.stop();
 				brands = db.retriveBrand();
 				type = "quit";
 				for(Brand bra:brands){
@@ -460,8 +469,8 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 		// TODO Auto-generated method stub
 		super.onStop();
 		if(coin_rotate!=null){
-			//coin_rotate.stop();
-			//coin_rotate=null;
+			coin_rotate.stop();
+			coin_rotate=null;
 		}
 	}
 	@Override
@@ -489,8 +498,8 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		if(coin_rotate!=null){
-			//coin_rotate.stop();
-			//coin_rotate = null;
+			coin_rotate.stop();
+			coin_rotate = null;
 		}
 		finish();
 		super.onBackPressed();

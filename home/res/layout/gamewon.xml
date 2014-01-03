@@ -77,19 +77,19 @@
     android:background="#00000000" 
     >
 
-           <!--   <com.example.survey_game.cup.MainGamePanel
+              <com.example.survey_game.cup.MainGamePanel
+                 android:id="@+id/imagecoin"
+                 android:layout_width="391dp"
+                 android:layout_height="400dp"
+                 android:layout_alignParentTop="true"
+                 android:layout_centerHorizontal="true" /> 
+ 
+ <!-- <ImageView
                  android:id="@+id/imagecoin"
                  android:layout_width="220dp"
                  android:layout_height="221dp"
                  android:layout_alignParentTop="true"
                  android:layout_centerHorizontal="true" /> -->
- 
- <ImageView
-                 android:id="@+id/imagecoin"
-                 android:layout_width="220dp"
-                 android:layout_height="221dp"
-                 android:layout_alignParentTop="true"
-                 android:layout_centerHorizontal="true" />
                  </RelativeLayout>
         </LinearLayout>
     </LinearLayout>

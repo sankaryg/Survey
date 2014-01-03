@@ -111,7 +111,7 @@ public class Ballons implements Serializable{
 	}
 
 	public Ballons(GameView gameView, Bitmap bmp, double radius,double rotation2,
-			 Feature feature2, int i, String font, int fontsize) {
+			 Feature feature2, float f, String font, int fontsize) {
 
 		this.width = bmp.getWidth() / BMP_COLUMNS;
 		scale = gameView.getResources().getDisplayMetrics().density;
@@ -140,8 +140,8 @@ public class Ballons implements Serializable{
 		y = (float) (Math.random()*(gameView.getHeight()-height-20));
 		//this.velocity = new Vector(0, 0);
 		//this.position = new Vector(x, y);
-		this.xSpeed = (float)(0.5);// * Math.cos(Math.toRadians(angle)));
-	    this.ySpeed = (float)(-0.5);// * (float)Math.sin(Math.toRadians(angle)));
+		this.xSpeed = (float)( f);//*Math.cos(Math.toRadians(angle)));
+	    this.ySpeed = (float)(-f);//* (float)Math.sin(Math.toRadians(angle)));
 		/*if(i>0)
 		MAX_SPEED = i;//Integer.parseInt(i);
 		xSpeed = MAX_SPEED;//rnd.nextInt(MAX_SPEED * 2) - MAX_SPEED;
