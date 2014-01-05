@@ -52,7 +52,7 @@ public class GameActivity extends Activity {
 		public void onCallStateChanged(int state, String incomingNumber) {
 			if (state == TelephonyManager.CALL_STATE_RINGING) {
 				// Incoming call: Pause music
-				onPause();
+				//onPause();
 			} else if (state == TelephonyManager.CALL_STATE_IDLE) {
 				// Not in call: Play music
 
@@ -210,6 +210,8 @@ public class GameActivity extends Activity {
 		// game.timer.setPaused(false);
 		// if (!Constants.threeBalloons) {
 		if (!GameView.end) {
+			if(alertDialog != null)
+				alertDialog.cancel();
 			alertDialog = new AlertDialog.Builder(GameActivity.this).create();
 			alertDialog.setMessage("Do u really want to close?");
 			alertDialog.setTitle("EXIT");

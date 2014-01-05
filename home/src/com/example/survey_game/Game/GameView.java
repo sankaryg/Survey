@@ -107,7 +107,7 @@ public class GameView extends SurfaceView {
 	private static GameActivity activity;
 
 	private List<CompFeature> compList;
-	private long millisRemaining = 1 * 30000;
+	private static long millisRemaining = 1 * 30000;
 
 	private List<ContraFeature> contraList;
 
@@ -231,7 +231,13 @@ public class GameView extends SurfaceView {
 					timer.cancel();
 					if (ballons != null)
 						ballons.clear();
-					millisRemaining = time;// 1 * 30000;
+					time = Constants.time[Integer.parseInt((sharedPrefs.getString(
+							"prefSyncTimer", "NULL") == "NULL") ? "0" : sharedPrefs
+							.getString("prefSyncTimer", "NULL"))];
+					millisRemaining = time;
+					if(timer != null)
+						timer.cancel();
+					countDownTimer(millisRemaining);
 					//addDiffBallons(++count, Constants.noOfBallons);
 					if (featureList.size() > Constants.noOfBallons){
 						addDiffBallons(
@@ -244,6 +250,7 @@ public class GameView extends SurfaceView {
 						addDiffBallons(count,
 								featureList.size());
 					}
+					//countDownTimer(millisRemaining);
 					timer.start();
 				}
 				if (featureList.size() == 0) {
@@ -277,6 +284,7 @@ public class GameView extends SurfaceView {
 		activity = (GameActivity) context;
 		sharedPrefs = PreferenceManager
 				.getDefaultSharedPreferences(activity);
+		time = 1 * 30000;
 		int bg = Constants.themes[Integer.parseInt((sharedPrefs.getString(
 				"prefSyncThems", "NULL") == "NULL") ? "0" : sharedPrefs
 				.getString("prefSyncThems", "NULL"))];
@@ -299,6 +307,8 @@ public class GameView extends SurfaceView {
 			
 			millisRemaining = global.getMillisremaining();
 			
+			if(millisRemaining == 0)
+				millisRemaining = time;
 			scorenumber = global.getScorenumber();
 			
 			ballcount = global.getBallcount();
@@ -338,7 +348,7 @@ public class GameView extends SurfaceView {
 		mTextPen.setTextSize(14 * (activity.getResources().getDisplayMetrics().density));
 		features = new ArrayList<Feature>();
 
-		time = 1 * 30000;
+		
 		log = db.getFirstRecord();
 		uploadList = db.retriveUpload();
 		if (uploadList.size() > 0) {
@@ -357,7 +367,8 @@ public class GameView extends SurfaceView {
 		} else
 			str = "new";
 
-		
+		if(timer != null)
+			timer.cancel();
 		countDownTimer(millisRemaining);
 		timer.start();
 		Typeface tf = Typeface.createFromAsset(getContext().getAssets(), font);
@@ -413,6 +424,9 @@ public class GameView extends SurfaceView {
 						gameLoopThread.setRunning(true);
 						gameLoopThread.start();
 					}
+					if(timer != null)
+						timer.cancel();
+					countDownTimer(millisRemaining);
 					timer.start();
 				}
 			}
@@ -575,6 +589,8 @@ public class GameView extends SurfaceView {
 			return true;
 		if(remove)
 			return true;
+		if(list== null)
+			list = new ArrayList<ServerData>();
 		if (System.currentTimeMillis() - lastClick > 500) {
 
 			lastClick = System.currentTimeMillis();
@@ -647,7 +663,7 @@ public class GameView extends SurfaceView {
 										break;
 									}
 								}
-								if (list.size() == 0) {
+								if (list!=null && list.size() == 0) {
 									score.add(new Score(score, this, ballons
 											.get(i).getX()
 											+ ballons.get(i).getBmp()
@@ -947,6 +963,13 @@ public class GameView extends SurfaceView {
 			}
 
 		}
+		time = Constants.time[Integer.parseInt((sharedPrefs.getString(
+				"prefSyncTimer", "NULL") == "NULL") ? "0" : sharedPrefs
+				.getString("prefSyncTimer", "NULL"))];
+		millisRemaining = time;
+		if(timer != null)
+			timer.cancel();
+		countDownTimer(millisRemaining);
 		return false;
 	}
 
@@ -992,6 +1015,22 @@ public class GameView extends SurfaceView {
 	}
 
 	public void movenext() {
+
+		if(scorenumber < 0){
+			scorenumber = 0;
+			Constants.endScreen = "rookie";
+			//coin_rotate.setImageResource(R.drawable.rookie);
+		}
+		else if(scorenumber <= (Constants.maxScore * 0.5)){
+			Constants.endScreen = "rookie";
+			//coin_rotate.setImageResource(R.drawable.rookie);
+		}else if( scorenumber <= (Constants.maxScore * 0.8) && scorenumber > (Constants.maxScore * 0.5)){
+			Constants.endScreen = "pro";
+			//coin_rotate.setImageResource(R.drawable.pro);
+		}else if(scorenumber > (Constants.maxScore * 0.8) ){//&& score <= Constants.maxScore
+			Constants.endScreen = "expert";
+			//coin_rotate.setImageResource(R.drawable.expert);
+		}
 
 		Intent inte = new Intent(activity, GameEnd.class)
 				.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -1059,7 +1098,7 @@ public class GameView extends SurfaceView {
 		 * if(ballons.size()>0){ ballons.clear(); for(int i=0;i<5;i++){
 		 * ballons.add((Ballons)bundle.getSerializable("ballons_"+i)); } }
 		 */
-		millisRemaining = global.getMillisremaining();//bundle.getLong("time");
+		millisRemaining = bundle.getLong("time");;//global.getMillisremaining();//bundle.getLong("time");
 		paused = false;
 		scorenumber = global.getScorenumber();//bundle.getInt("score");
 		ballcount = global.getBallcount();//bundle.getInt("bonuscount");
@@ -1090,7 +1129,9 @@ public class GameView extends SurfaceView {
 		
 		timerpause = false;
 		if(!preference1.getBoolean("restart", false)){
-		countDownTimer(millisRemaining);
+			if(timer != null)
+				timer.cancel();
+			countDownTimer(millisRemaining);
 		timer.start();
 		}
 		gameLoopThread.paused = false;
@@ -1116,7 +1157,9 @@ public class GameView extends SurfaceView {
 		// paused = false;
 		timerpause = false;
 		if(!preference1.getBoolean("restart", false)){
-		countDownTimer(millisRemaining);
+			if(timer != null)
+				timer.cancel();
+		//countDownTimer(millisRemaining);
 		timer.start();
 		}
 	}
@@ -1240,11 +1283,11 @@ public class GameView extends SurfaceView {
 												ballons.get(i)
 														.setRemove(remove);
 												// ballons.remove(i);
-												time = Constants.time[Integer.parseInt((sharedPrefs.getString(
-														"prefSyncTimer", "NULL") == "NULL") ? "0" : sharedPrefs
-														.getString("prefSyncTimer", "NULL"))];
 												millisRemaining = time;
 												ballons.clear();
+												if(timer != null)
+													timer.cancel();
+												//countDownTimer(millisRemaining);
 												timer.start();
 												if(count>=diffscreen.length)
 													count = count/2;

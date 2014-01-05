@@ -135,9 +135,9 @@ public class Ballons implements Serializable{
 
 		Random rnd = new Random();
 
-		x = (float) (Math.random()*(gameView.getWidth()-width-20));
+		x = (float) (Math.random()*(gameView.getWidth()-width));
 
-		y = (float) (Math.random()*(gameView.getHeight()-height-20));
+		y = (float) (Math.random()*(gameView.getHeight()-height));
 		//this.velocity = new Vector(0, 0);
 		//this.position = new Vector(x, y);
 		this.xSpeed = (float)( f);//*Math.cos(Math.toRadians(angle)));

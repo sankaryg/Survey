@@ -78,6 +78,7 @@ public class GameEnd extends Activity{
 	private AnimationDrawable anima;
 	private LinearLayout layout;
 	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -86,6 +87,10 @@ public class GameEnd extends Activity{
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		setContentView(R.layout.gamewon);
+						
+	}
+	 
+	public void init(){
 		layout = (LinearLayout) findViewById(R.id.bg);
 		connection = new ConnectionDetector(this);
 		global = (Global)getApplicationContext();
@@ -148,6 +153,7 @@ public class GameEnd extends Activity{
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
+				if(coin_rotate!=null)
 				coin_rotate.stop();
 				Editor edit = preference.edit();
 				edit.putInt("upload", 2);
@@ -166,6 +172,7 @@ public class GameEnd extends Activity{
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				if(coin_rotate!=null)
 				coin_rotate.stop();
 				if(count != 2){
 					Editor edit = preference.edit();
@@ -189,6 +196,7 @@ public class GameEnd extends Activity{
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				if(coin_rotate!=null)
 				coin_rotate.stop();
 				brands = db.retriveBrand();
 				type = "quit";
@@ -350,9 +358,8 @@ public class GameEnd extends Activity{
 				}
 			}
 		});*/
-				
+
 	}
-	 
 	public void showAlert(){
 		alertDialog = new AlertDialog.Builder(GameEnd.this).create();
 		alertDialog.setMessage("Do you  want to play again?");
@@ -461,7 +468,7 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 		// TODO Auto-generated method stub
 		super.onStart();
 		//setContentView(layout);
-		
+		init();
 
 	}
 	@Override

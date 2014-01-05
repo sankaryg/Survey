@@ -15,18 +15,18 @@ public class ElaineAnimated {
 
 	private Bitmap bitmap;		// the animation sequence
 	private Rect sourceRect;	// the rectangle to be drawn from the animation bitmap
-	private int frameNr;		// number of frames in animation
+	private float frameNr;		// number of frames in animation
 	private int currentFrame;	// the current frame
 	private long frameTicker;	// the time of the last frame update
 	private int framePeriod;	// milliseconds between each frame (1000/fps)
 	
-	private int spriteWidth;	// the width of the sprite to calculate the cut out rectangle
+	private float spriteWidth;	// the width of the sprite to calculate the cut out rectangle
 	private int spriteHeight;	// the height of the sprite
 	
 	private int x;				// the X coordinate of the object (top left of the image)
 	private int y;				// the Y coordinate of the object (top left of the image)
 	
-	public ElaineAnimated(Bitmap bitmap, int x, int y, int width, int height, int fps, int frameCount) {
+	public ElaineAnimated(Bitmap bitmap, int x, int y, int width, int height, int fps, float frameCount) {
 		this.bitmap = bitmap;
 		this.x = x;
 		this.y = y;
@@ -34,7 +34,7 @@ public class ElaineAnimated {
 		frameNr = frameCount;
 		spriteWidth = bitmap.getWidth() / frameCount;
 		spriteHeight = bitmap.getHeight();
-		sourceRect = new Rect(0, 0, spriteWidth, spriteHeight);
+		sourceRect = new Rect(0, 0, (int)spriteWidth, spriteHeight);
 		framePeriod = 1000 / fps;
 		frameTicker = 0l;
 	}
@@ -52,7 +52,7 @@ public class ElaineAnimated {
 	public void setSourceRect(Rect sourceRect) {
 		this.sourceRect = sourceRect;
 	}
-	public int getFrameNr() {
+	public float getFrameNr() {
 		return frameNr;
 	}
 	public void setFrameNr(int frameNr) {
@@ -70,7 +70,7 @@ public class ElaineAnimated {
 	public void setFramePeriod(int framePeriod) {
 		this.framePeriod = framePeriod;
 	}
-	public int getSpriteWidth() {
+	public float getSpriteWidth() {
 		return spriteWidth;
 	}
 	public void setSpriteWidth(int spriteWidth) {
@@ -106,14 +106,14 @@ public class ElaineAnimated {
 			}
 		}
 		// define the rectangle to cut out sprite
-		this.sourceRect.left = currentFrame * spriteWidth;
-		this.sourceRect.right = this.sourceRect.left + spriteWidth;
+		this.sourceRect.left = (int) (currentFrame * spriteWidth);
+		this.sourceRect.right = (int) (this.sourceRect.left + spriteWidth);
 	}
 	
 	// the draw method which draws the corresponding frame
 	public void draw(Canvas canvas) {
 		// where to draw the sprite
-		Rect destRect = new Rect(getX(), getY(), getX() + spriteWidth, getY() + spriteHeight);
+		Rect destRect = new Rect(getX(), getY(), (int)(getX() + spriteWidth), getY() + spriteHeight);
 		canvas.drawBitmap(bitmap, sourceRect, destRect, null);
 			}
 }
