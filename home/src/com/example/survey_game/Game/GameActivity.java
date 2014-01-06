@@ -210,9 +210,11 @@ public class GameActivity extends Activity {
 		// game.timer.setPaused(false);
 		// if (!Constants.threeBalloons) {
 		if (!GameView.end) {
-			if(alertDialog != null)
+			if(alertDialog != null){
 				alertDialog.cancel();
+			}	
 			alertDialog = new AlertDialog.Builder(GameActivity.this).create();
+			alertDialog.setCancelable(false);
 			alertDialog.setMessage("Do u really want to close?");
 			alertDialog.setTitle("EXIT");
 			// Setting alert dialog icon

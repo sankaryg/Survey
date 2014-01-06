@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -57,7 +58,8 @@ public class ProductAdapter extends ArrayAdapter<Product> {
 			convertView.setTag(holder);
 		}
 		holder = (ViewHolder) convertView.getTag();
-
+		holder.productName.setTextColor(Color.BLACK);
+		holder.productName.setBackgroundColor(Color.GRAY);
 		holder.productName.setText(optionList.get(position).getProduct_name());
 		if(optionList.get(position).getProduct_name().equals("mobile"))
 		holder.productImage.setImageResource(R.drawable.mobile);
