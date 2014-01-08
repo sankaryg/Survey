@@ -68,6 +68,7 @@ public class ProductSelectActivity extends Activity implements OnItemClickListen
 	
 	private void callAdapter() {
 		// TODO Auto-generated method stub
+		
 		adapter = new ProductAdapter(ProductSelectActivity.this, R.layout.grid_item, products);
 		grid.setAdapter(adapter);
 	}
@@ -120,6 +121,10 @@ public class ProductSelectActivity extends Activity implements OnItemClickListen
 						pro.setProduct_image(R.drawable.mobile);
 						else if(i==1)
 							pro.setProduct_image(R.drawable.laptop);
+						else
+
+							pro.setProduct_image(R.drawable.ic_launcher);
+
 						products.add(pro);
 						db.insertProduct(pro);
 					}

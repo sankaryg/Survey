@@ -248,7 +248,10 @@ public class dbrand extends Activity{
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				if(br>=1)
 				logout();
+				else
+					alert.showAlertDialog(dbrand.this, "Survey Game", "Please play at least two brand before log out", true);
 			}
 		});
 		
@@ -317,7 +320,7 @@ public class dbrand extends Activity{
 		}
 		
 		Log.d("check", brands+"_");
-		Collections.shuffle(brands);
+		//Collections.shuffle(brands);
 		Log.d("check before", brands+"_");
 		//if(Constants.storeImage ==null || Constants.storeImage.size() <= 0 )
 		if(connection.isConnectingToInternet())
@@ -345,10 +348,10 @@ public class dbrand extends Activity{
 				
 			}
 		});
-		if(br>=1){
+		//if(br>=1){
 			//quit.setVisibility(View.VISIBLE);
 			logout.setVisibility(View.VISIBLE);
-		}
+		//}
 	}
 	private void callAdapter(List<Brand> brands2) {
 		
@@ -651,7 +654,7 @@ public class dbrand extends Activity{
 			image++;
 			}catch (Exception e) {
 				// TODO: handle exception
-				str = null;
+				str = "failure";
 			}
 			finally{
 				
@@ -667,7 +670,7 @@ public class dbrand extends Activity{
 			super.onPostExecute(result);
 			if(pd!=null && pd.isShowing())
 				pd.dismiss();
-			if(result != null && result.equals("success")){
+			if(result != null){// && result.equals("success")){
 				adapter = new BrandAdapter(dbrand.this, R.layout.grid_item, brands,Constants.storeImage,play,bid);
 				grid.setAdapter(adapter);
 			}

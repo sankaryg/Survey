@@ -65,6 +65,8 @@ public class ProductAdapter extends ArrayAdapter<Product> {
 		holder.productImage.setImageResource(R.drawable.mobile);
 		else if(optionList.get(position).getProduct_name().equals("Laptop"))
 			holder.productImage.setImageResource(R.drawable.laptop);
+		else 
+			holder.productImage.setImageResource(R.drawable.ic_launcher);
 				return convertView;
 	}
 
