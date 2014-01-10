@@ -20,6 +20,7 @@ import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -142,7 +143,7 @@ public class BrandAdapter extends ArrayAdapter<Brands>{
 			}
 		});
 		holder.productName.setText(optionList.get(position).getBrandName());
-		String path = optionList.get(position).getBrand_image_path();//preference.getString(optionList.get(position).getBrand_image_path(),null);
+		String path = Environment.getExternalStorageDirectory()+"/img_"+preference.getString("pid","1")+optionList.get(position).getBrandName()+".png";//optionList.get(position).getBrand_image_path();//preference.getString(optionList.get(position).getBrand_image_path(),null);
 		if(path!=null){
 		File file = new File(path);
 		if(file.exists())

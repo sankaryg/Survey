@@ -1,5 +1,6 @@
 package com.example.survey_game;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.SyncStateContract.Constants;
+import android.os.Environment;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -163,10 +164,24 @@ public class ProductSelectActivity extends Activity implements OnItemClickListen
 			edit.putInt("download", 1);
 		}
 		edit.commit();
+		
+		File folder = Environment.getExternalStorageDirectory();
+		 String fileName = folder.getPath()+"img_"+preference.getString("pid","1");
+		  File myFile = new File(fileName);
+		  recursiveDelete(myFile);
+		  /* if(myFile.exists())
+		        myFile.delete();*/
 		Intent i=new Intent(getBaseContext(),loginnew.class);
 		com.example.survey_game.Util.Constants.productID = products.get(arg2).getProduct_id();
 		i.putExtra("pid", products.get(arg2).getProduct_id());
 		startActivity(i);
 		finish();
 	}
+	private void recursiveDelete(File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory())
+            for (File child : fileOrDirectory.listFiles())
+                recursiveDelete(child);
+
+        fileOrDirectory.delete();
+    }
 }

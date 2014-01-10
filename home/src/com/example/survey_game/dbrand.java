@@ -149,13 +149,14 @@ public class dbrand extends Activity{
 	        	if(!file.exists()){
 	        		file.mkdir();
 	        	}
-	        	extStorageDirectory += "/img_"+preference.getString("pid","1")+fileName+".png";
+	        	extStorageDirectory += "/img_"+preference.getString("pid","1")+up.getBrandName()+".png";
 	        	File f = new File(extStorageDirectory);
 	        	bmImg = BitmapFactory.decodeFile(f.getAbsolutePath());
 	        	if(bmImg!=null){
 	        		up.setBrand_image_path(f.getAbsolutePath());
 	        		db.updateBrand(up, up.getBrandStatus());
-	        		preference.edit().putString(fileUrl, f.getAbsolutePath()).commit();
+	        		preference.edit().putString(up.getBrandName(), f.getAbsolutePath()).commit();
+	        		//preference.edit().putString(fileUrl, f.getAbsolutePath()).commit();
 	        	}else{
 	        		extStorageDirectory = Environment.getExternalStorageDirectory().toString();
 	        	    BitmapFactory.Options bmOptions;
@@ -194,7 +195,7 @@ public class dbrand extends Activity{
 	    	        bmImg = BitmapFactory.decodeStream(is);
 
 	        	    OutputStream outStream = null;
-	        	    file=new File(android.os.Environment.getExternalStorageDirectory(),"img_"+preference.getString("pid","1"));
+	        	    file=new File(android.os.Environment.getExternalStorageDirectory(),"img_"+preference.getString("pid","1")+"_"+up.getBrandName());
 	                file=new File(extStorageDirectory, "img_"+preference.getString("pid","1")+fileName+".png");
 	        	     try {
 	        	        outStream = new FileOutputStream(file);
@@ -203,7 +204,7 @@ public class dbrand extends Activity{
 	        	        outStream.close();
 	        	        up.setBrand_image_path(file.getAbsolutePath());
 		        		db.updateBrand(up, up.getBrandStatus());
-	        	        preference.edit().putString(fileUrl, file.getAbsolutePath()).commit();
+	        	        preference.edit().putString(up.getBrandName(), file.getAbsolutePath()).commit();
 	        	      } catch (FileNotFoundException e) {
 	        	         // TODO Auto-generated catch block
 	        	       e.printStackTrace();
