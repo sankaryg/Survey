@@ -20,14 +20,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.example.survey_game.WebService.ShowAlert;
 import com.example.survey_game.WebService.UserFunction;
 import com.example.survey_game.adapter.ProductAdapter;
 import com.example.survey_game.entity.Product;
+import com.example.survey_game_fuction.Brand;
+import com.example.survey_game_fuction.CompFeature;
 import com.example.survey_game_fuction.ConnectionDetector;
+import com.example.survey_game_fuction.ContraFeature;
 
-public class ProductSelectActivity extends Activity implements OnItemClickListener{
+public class ProductSelectActivity extends Activity implements OnItemClickListener,IAsyncTask{
 
 	private GridView grid;
 	public ProgressDialog pd;
@@ -38,6 +42,12 @@ public class ProductSelectActivity extends Activity implements OnItemClickListen
 	private ShowAlert alert;
 	private ConnectionDetector connection;
 	private String productID;
+	private int currentPro_id;
+	private int product_id;
+	private List<ContraFeature> featureList;
+	private List<Brand> brandList;
+	private List<CompFeature> contraList;
+	private List<CompFeature> compList;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -53,25 +63,114 @@ public class ProductSelectActivity extends Activity implements OnItemClickListen
 		productID = preference.getString("product_id",null);
 		
 		products = db.retriveProducts();
-		
+		currentPro_id = products.size();
 		/**/
-		if(products.size()<=0)
-			if(!connection.isConnectingToInternet()){
-				alert.showAlertDialog(ProductSelectActivity.this, "Survey Game", "No network", true);
+		if(connection.isConnectingToInternet())
+			new CheckUpdate().execute();
+		else{
+			//alert.showAlertDialog(ProductSelectActivity.this, "Survey Game", "No network", true);
+	if(products.size()<=0)
+	if(!connection.isConnectingToInternet()){
+		alert.showAlertDialog(ProductSelectActivity.this, "Survey Game", "No network", true);
 
-			}else
-		new InsertData().execute();
-		else
-			callAdapter();
+	}else
+new InsertData().execute();
+else
+	callAdapter();
+		}
+	}
+	class CheckUpdate extends AsyncTask<Void, Void, JSONObject>{
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+			pd = new ProgressDialog(ProductSelectActivity.this);
+			pd.setMessage("Loading...");
+			pd.setMax(100);
+			pd.setCancelable(false);
+			pd.setIndeterminate(false);
+			pd.show();
+		}
+		
+		@Override
+		protected JSONObject doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+			UserFunction user = new UserFunction();
+			JSONObject jboj = null;
+			String str = null;
+			try{
+				jboj = user.checkUpdate();
+				
+			}catch(Exception e){
+				str = null;
+			}
+			return jboj;
+		}
+		@Override
+		protected void onPostExecute(JSONObject result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			if(pd!=null && pd.isShowing())
+				pd.dismiss();
+			if(result!= null){
+				try {
+					String str  = result.getString("message");
+					if(str.equals("updates found")){
+						db.resetTables(MySQLiteHelper.PRODUCT_TABLE);
+						db.resetTables(MySQLiteHelper.BRAND_TABLE);
+						db.resetTables(MySQLiteHelper.FEATURE_TABLE);
+						db.resetTables(MySQLiteHelper.CONTRA_TYPE_TABLE);
+						db.resetTables(MySQLiteHelper.COMP_TYPE_TABLE);
+						if(connection.isConnectingToInternet())
+							new InsertData().execute();
+						else
+							alert.showAlertDialog(ProductSelectActivity.this, "Survey Game", "No network", true);
+						
+					}else
+
+						if(products.size()<=0)
+							if(!connection.isConnectingToInternet()){
+								alert.showAlertDialog(ProductSelectActivity.this, "Survey Game", "No network", true);
+
+							}else
+						new InsertData().execute();
+						else
+							callAdapter();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		
 	}
-	
 	
 	private void callAdapter() {
 		// TODO Auto-generated method stub
 		
 		adapter = new ProductAdapter(ProductSelectActivity.this, R.layout.grid_item, products);
 		grid.setAdapter(adapter);
+		//
+		product_id = 0;
+		if(products.size()>0){
+			for(Product pro:products){
+			featureList = db.retriveContraFeature(products.get(product_id).getProduct_id());
+			brandList = db.retriveBrand(products.get(product_id).getProduct_id());
+			contraList = db.retriveCompFeature(products.get(product_id).getProduct_id());
+			compList = db.retriveCompFeature(products.get(product_id).getProduct_id());
+			if(!(featureList.size()>0 || brandList.size()>0 || contraList.size()>0 || compList.size()>0)){
+				CommonTask task = new CommonTask(ProductSelectActivity.this, products.get(product_id).getProduct_id());
+				task.execute();	
+				break;
+			}else{
+				if(product_id<products.size()-1)
+				++product_id;
+			}
+			}
+		}
+			
+		//}
 	}
 
 
@@ -131,6 +230,7 @@ public class ProductSelectActivity extends Activity implements OnItemClickListen
 					}
 					if(products.size()>0){
 						callAdapter();
+						currentPro_id = products.size();
 					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
@@ -146,15 +246,15 @@ public class ProductSelectActivity extends Activity implements OnItemClickListen
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		// TODO Auto-generated method stub
-		db.resetTables(MySQLiteHelper.TABLE_NAME);
-		db.resetTables(MySQLiteHelper.BRAND_TABLE);
+		//db.resetTables(MySQLiteHelper.TABLE_NAME);
+		/*db.resetTables(MySQLiteHelper.BRAND_TABLE);
 		db.resetTables(MySQLiteHelper.FEATURE_TABLE);
 		db.resetTables(MySQLiteHelper.CONTRA_TYPE_TABLE);
 		db.resetTables(MySQLiteHelper.COMP_TYPE_TABLE);
-		db.resetTables(MySQLiteHelper.server_table);
+		db.resetTables(MySQLiteHelper.server_table);*/
 		Editor edit = preference.edit();
 		edit.clear().commit();
-		edit.putString("activity", "dbrand");
+		//edit.putString("activity", "dbrand");
 		if(productID == null){
 		edit.putString("product_id", products.get(arg2).getProduct_id());
 		edit.putInt("download", 0);
@@ -164,11 +264,11 @@ public class ProductSelectActivity extends Activity implements OnItemClickListen
 			edit.putInt("download", 1);
 		}
 		edit.commit();
-		
-		File folder = Environment.getExternalStorageDirectory();
+		/* will going to use check update screen */
+		/*File folder = Environment.getExternalStorageDirectory();
 		 String fileName = folder.getPath()+"img_"+preference.getString("pid","1");
 		  File myFile = new File(fileName);
-		  recursiveDelete(myFile);
+		  recursiveDelete(myFile);*/
 		  /* if(myFile.exists())
 		        myFile.delete();*/
 		Intent i=new Intent(getBaseContext(),loginnew.class);
@@ -184,4 +284,18 @@ public class ProductSelectActivity extends Activity implements OnItemClickListen
 
         fileOrDirectory.delete();
     }
+
+
+	@Override
+	public void loadCompleted() {
+		// TODO Auto-generated method stub
+		if(product_id<products.size()-1){
+			++product_id;
+			CommonTask task = new CommonTask(ProductSelectActivity.this, products.get(product_id).getProduct_id());
+			task.execute();
+		}else{
+			
+		}
+		Toast.makeText(ProductSelectActivity.this, "product load finished", Toast.LENGTH_SHORT).show();
+	}
 }

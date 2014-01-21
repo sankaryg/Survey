@@ -48,9 +48,11 @@ import com.example.survey_game.Util.Constants;
 import com.example.survey_game.WebService.ShowAlert;
 import com.example.survey_game.WebService.UserFunction;
 import com.example.survey_game.cup.MainGamePanel;
+import com.example.survey_game.dbrand.Load;
 import com.example.survey_game.entity.ExtensionFilter;
 import com.example.survey_game_fuction.Brand;
 import com.example.survey_game_fuction.ConnectionDetector;
+import com.example.survey_game_fuction.Login;
 import com.example.survey_game_fuction.Upload;
 
 public class GameEnd extends Activity{
@@ -77,6 +79,11 @@ public class GameEnd extends Activity{
 	//ImageView coin_rotate;
 	private AnimationDrawable anima;
 	private LinearLayout layout;
+	public ProgressDialog pd;
+	public List<Brand> brands;
+	private boolean promptAlert;
+	private AlertDialog alertDialog1;
+	private String activity;
 	
 	
 	@Override
@@ -198,17 +205,22 @@ public class GameEnd extends Activity{
 				// TODO Auto-generated method stub
 				if(coin_rotate!=null)
 				coin_rotate.stop();
-				brands = db.retriveBrand();
+				brands = db.retriveBrand(preference.getString("product_id", "1"));
 				type = "quit";
 				for(Brand bra:brands){
 					if(bra.getBrandStatus().equals("true")){
 						++br;
 					}
 				}
+				br = db.getNoOfBrandPlayed(preference.getString("product_id", "1"));
 				if(br>=2){
 					if(connection.isConnectingToInternet()){
-						uploadList = db.retriveUpload();
+						List<Login> Offlinelogin = db.retriveUsers();
+						uploadList = db.retriveUpload(preference.getString("uid", null));
 						//for(Upload up : uploadList){
+						if(Offlinelogin.size()>0){
+							new InsertData().execute(Offlinelogin);
+						}else {
 							try{
 								new Load().execute(uploadList);
 								//Thread.sleep(1000);
@@ -225,13 +237,15 @@ public class GameEnd extends Activity{
 						Editor edit = preference.edit();
 						edit.putBoolean("logout", true);
 						edit.commit();
-						
-						db.resetTables(MySQLiteHelper.TABLE_NAME);
-						db.resetTables(MySQLiteHelper.server_table);
+						db.deleteLogin(preference.getString("uid", null));
+						db.deleteUpload(preference.getString("uid", null));
+						//db.resetTables(MySQLiteHelper.TABLE_NAME);
+						//db.resetTables(MySQLiteHelper.server_table);
 						Toast.makeText(GameEnd.this, "success", Toast.LENGTH_LONG).show();
 						global.setLogin(null);
 						if(type.equals("quit")){
 							//finish();
+						}
 						}
 					}
 					else{
@@ -251,8 +265,9 @@ public class GameEnd extends Activity{
 								Editor edit = preference.edit();
 								edit.putBoolean("logout", true);
 								edit.commit();
-								db.resetTables(MySQLiteHelper.TABLE_NAME);
-								uploadList = db.retriveUpload();
+								db.deleteLogin(preference.getString("uid", null));
+								//db.resetTables(MySQLiteHelper.TABLE_NAME);
+								uploadList = db.retriveUpload(preference.getString("uid", null));
 								finish();
 										
 							}
@@ -360,6 +375,211 @@ public class GameEnd extends Activity{
 		});*/
 
 	}
+	@SuppressWarnings("unchecked")
+	public void logout(){
+		/*if(connection.isConnectingToInternet()){
+			uploadList = db.retriveUpload();
+				try{
+					new Load().execute(uploadList);
+					}
+					catch (Exception e) {
+						// TODO: handle exception
+					}
+		
+		}else{
+			alert.showAlertDialog(dbrand.this, "SurveyGame", "Check Your network", true);
+		}*/
+		
+			/*brands = db.retriveBrand();
+			for(Brand bra:brands){
+				if(bra.getBrandStatus().equals("true")){
+					++br;
+				}
+			}*/
+		activity = preference.getString("activity", null);
+			uploadList = db.retriveUpload(preference.getString("uid", null));
+			List<Login> Offlinelogin = db.retriveUsers();
+			//if(br>=2){
+				if(connection.isConnectingToInternet()){
+					if(Offlinelogin.size()>0){
+						new InsertData().execute(Offlinelogin);
+					}else 
+					if(activity!=null){
+					
+						try{
+							new Load().execute(uploadList);
+							}
+							catch (Exception e) {
+								// TODO: handle exception
+							}
+				Editor edit = preference.edit();
+				edit.putInt("upload", 2);
+				edit.putInt("playMode", 2);
+				preference.edit().putString("activity", null).commit();
+				//edit.clear();
+				edit.commit();
+							//db.resetTables(MySQLiteHelper.TABLE_NAME);
+						//db.resetTables(MySQLiteHelper.server_table);
+						global.setLogin(null);
+				Toast.makeText(GameEnd.this, "success", Toast.LENGTH_LONG).show();
+				finish();
+					}/*else{
+						Constants.name = preference.getString("name", null);
+						Constants.age = preference.getString("age", null);
+						Constants.gender = preference.getString("gender", null);
+						if(Constants.name!=null && Constants.age!=null && Constants.gender !=null)
+							new InsertData().execute();
+							else
+							alert.showAlertDialog(dbrand.this, "Warning", "You are not logged in and no data to upload", true);
+
+						
+
+					}
+*/					}
+				else{
+					Editor edit = preference.edit();
+					edit.putInt("upload", 2);
+					edit.putInt("playMode", 2);
+					preference.edit().putString("activity", null).commit();
+					//edit.clear();
+					edit.commit();
+					brands = db.retriveBrand(preference.getString("product_id", "1"));
+					for(Brand brand:brands){
+						db.updateBrand(brand, "false");
+					}
+								//db.resetTables(MySQLiteHelper.TABLE_NAME);
+							//db.resetTables(MySQLiteHelper.server_table);
+							global.setLogin(null);
+					Toast.makeText(GameEnd.this, "success", Toast.LENGTH_LONG).show();
+					finish();
+					//alert.showAlertDialog(dbrand.this, "Warning", "Check your network connection", true);
+				}
+			//}
+			//}else{
+								
+				
+				//}
+			
+	}
+	class InsertData extends AsyncTask<List<Login>, Void, String>{
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+			pd = new ProgressDialog(GameEnd.this);
+			pd.setMessage("Loading...");
+			pd.setMax(100);
+			pd.setCancelable(false);
+			pd.setIndeterminate(false);
+			pd.show();
+		}
+		public void execute(String name, String age, String gender) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		protected String doInBackground(List<Login>... params) {
+			// TODO Auto-generated method stub
+			UserFunction user = new UserFunction();
+			JSONObject jboj = null;
+			String str = null;
+			List<Login> offline = params[0];
+			for(Login log:offline){
+			try{
+				jboj = user.userRegistration(log.getName(), String.valueOf(log.getAge()), log.getGender(),log.getProduct_id());
+				uploadList = db.retriveUpload(log.getDb_user_id());
+				db.updateLogin(log, log.getProduct_id(), jboj.getString("user_id"));
+				for(Upload up:uploadList){
+					up.setAge(jboj.getString("user_id"));
+					up.setName(log.getProduct_id());// setName(log.getName());//product id
+					db.updateUpload(up);
+				}
+				for(Upload up:uploadList){
+					try{
+						
+					JSONObject jobj = user.userUpload(up,android.text.format.DateFormat.format("yyyy-MM-dd hh:mm:ss", new java.util.Date()),alert.getDeviceID(GameEnd.this));
+					str = jobj.getString("success");
+					}catch (Exception e) {
+						// TODO: handle exception
+						str = null;
+					}
+				}
+				uploadList = db.retriveUpload(jboj.getString("user_id"));
+				for(Upload up:uploadList){
+					db.deleteUpload(up.getAge());
+					brands = db.retriveBrand(up.getName());
+					for(Brand brand:brands){
+						db.updateBrand(brand, "false");
+					}
+				}
+				
+				Editor edit = preference.edit();
+				edit.putBoolean("logout", true);
+				edit.putInt("upload", 2);
+				edit.putInt("playMode", 2);
+				if(connection.isConnectingToInternet())
+				edit.putString("activity", null);
+				//edit.clear();
+				db.deleteLogin(jboj.getString("user_id"));
+				//db.deleteUpload(preference.getString("uid", null));
+				
+				edit.commit();
+				str = (jboj.getString("user_id"));//+"_"+jboj.getString("product_id");
+				//db.u
+			}catch(Exception e){
+				str = null;
+			}
+			}
+			return str;
+		}
+		@Override
+		protected void onPostExecute(String result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			if(pd!=null && pd.isShowing())
+				pd.dismiss();
+			if(result!= null){
+			/*	Constants.name="";Constants.age="";Constants.gender="";
+			uploadList = db.retriveUpload(preference.getString("uid", null));
+			
+			for(Upload up:uploadList){
+				up.setAge(result);
+				up.setName(preference.getString("pid","1"));// setName(log.getName());//product id
+				db.updateUpload(up);
+			}
+			db.deleteLogin(preference.getString("uid", null));*/
+			//db.resetTables(MySQLiteHelper.TABLE_NAME);
+				
+			uploadList = db.retriveUpload(preference.getString("uid", null));
+		if(uploadList!=null&&uploadList.size()>0){
+			if(connection.isConnectingToInternet()){
+				try{
+					new Load().execute(uploadList);
+					}
+					catch (Exception e) {
+						// TODO: handle exception
+					}
+		Editor edit = preference.edit();
+		edit.putInt("upload", 2);
+		edit.putInt("playMode", 2);
+		//edit.clear();
+		edit.commit();
+		db.deleteUpload(preference.getString("uid", null));
+		//db.resetTables(MySQLiteHelper.server_table);
+		Toast.makeText(GameEnd.this, "success", Toast.LENGTH_LONG).show();
+		
+			}
+		else{
+			alert.showAlertDialog(GameEnd.this, "Warning", "Check your network connection", true);
+		}
+
+		}
+		finish();
+		}else{
+			alert.showAlertDialog(GameEnd.this, "Error", "Unable to process server", true);
+		}
+	}
+	}	
 	public void showAlert(){
 		alertDialog = new AlertDialog.Builder(GameEnd.this).create();
 		alertDialog.setMessage("Do you  want to play again?");
@@ -441,9 +661,9 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 			if(result != null && result.equals("1")){
 				Log.d("check", result+"_");
 				//if(upload!=null)
-				uploadList = db.retriveUpload();
+				uploadList = db.retriveUpload(preference.getString("uid", null));
 				for(Upload up:uploadList){
-					db.deleteUpload(up);
+					db.deleteUpload(up.getAge());
 				}
 				Editor edit = preference.edit();
 				edit.putString("activity", null);
@@ -501,6 +721,66 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
         ((ViewGroup) view).removeAllViews();
         }
     }
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		if(promptAlert){
+			 if (alertDialog1 != null) {
+					alertDialog1.cancel();
+			 }else{
+					alertDialog1 = new AlertDialog.Builder(GameEnd.this).create();
+					alertDialog1.setMessage("Are you "+db.getFirstRecord().getName()+"? Yes to proceed. No to Logout");
+					alertDialog1.setTitle("EXIT");
+					// Setting alert dialog icon
+					// alertDialog.setIcon((status) ? R.drawable.success :
+					// R.drawable.fail);
+
+					// Setting OK Button
+					alertDialog1.setButton(Dialog.BUTTON_POSITIVE, "YES",
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface arg0, int arg1) {
+									// TODO Auto-generated method stub
+									alertDialog1.cancel();
+
+								}
+							});
+					alertDialog1.setButton(Dialog.BUTTON_NEGATIVE, "NO",
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface arg0, int arg1) {
+									alertDialog1.cancel();
+									logout();
+								}
+							});
+					// Showing Alert Message
+					alertDialog1.show();
+			//alert.showAlertDialog(dbrand.this, "SurveyGame", "Check Your network", true);
+			Toast.makeText(GameEnd.this, "User Verification", Toast.LENGTH_SHORT).show();
+			preference.edit().putBoolean("pause", false).commit();
+			promptAlert = false;
+		}
+		
+		}
+		
+	}
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		preference.edit().putBoolean("pause", true).commit();
+		promptAlert = preference.getBoolean("pause", true);
+		super.onPause();
+	}
+	@Override
+	protected void onRestart() {
+		// TODO Auto-generated method stub
+		promptAlert = true;
+		preference.edit().putBoolean("pause", true).commit();
+		super.onRestart();
+	}
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub

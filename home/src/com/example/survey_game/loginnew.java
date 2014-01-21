@@ -1,9 +1,7 @@
 package com.example.survey_game;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -22,9 +20,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -32,21 +30,14 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Toast;
 
-import com.example.survey_game.Game.GameActivity;
-import com.example.survey_game.Game.GameEnd;
 import com.example.survey_game.Util.Constants;
 import com.example.survey_game.WebService.ShowAlert;
 import com.example.survey_game.WebService.UserFunction;
 import com.example.survey_game.video.VideoViewDemo;
 import com.example.survey_game_fuction.Brand;
-import com.example.survey_game_fuction.CompFeature;
 import com.example.survey_game_fuction.ConnectionDetector;
-import com.example.survey_game_fuction.ContraFeature;
 import com.example.survey_game_fuction.Login;
 import com.example.survey_game_fuction.Service;
-import com.example.survey_game_fuction.Service.Brands;
-import com.example.survey_game_fuction.Service.Feature;
-import com.example.survey_game_fuction.Service.compFeature;
 public class loginnew extends Activity implements OnClickListener{
 	  private DBfunction datasource;
 	EditText name_ed,age_ed;
@@ -71,6 +62,8 @@ public class loginnew extends Activity implements OnClickListener{
 	private String productid;
 	public JSONArray brand_logo;
 	private int download;
+	private String activity;
+	private int UserID;
 	
 		public void onCreate(Bundle b)
 		{
@@ -103,7 +96,8 @@ public class loginnew extends Activity implements OnClickListener{
 			Login log = datasource.getFirstRecord();//Get the last record of a table
 		    //datasource.open();
 			int br1 = 1;
-			brands1= datasource.retriveBrand();
+			UserID = preference.getInt("offline_userId", 0);
+			brands1= datasource.retriveBrand(preference.getString("product_id", "1"));
 			if(brands1!=null && brands1.size()>0){
 			for(Brand bra:brands1){
 				if(bra.getBrandStatus().equals("true")|| bra.getBrandStatus().equals("false")){
@@ -112,7 +106,8 @@ public class loginnew extends Activity implements OnClickListener{
 			}
 			}
 		    global = ((Global)getApplicationContext());
-			if(br1>1 && log!=null && !checkLogin){
+		    activity = preference.getString("activity", null);
+			if(br1>1 && activity!=null && !checkLogin){
 				global.setLogin(log);
 				
 				Intent i=new Intent(getBaseContext(),dbrand.class);
@@ -183,9 +178,10 @@ public class loginnew extends Activity implements OnClickListener{
 						login.setGender(n);
 						login.setStatus(true);
 						//datasource.resetTables(MySQLiteHelper.TABLE_NAME);
-						if(datasource.insertLogin(login)>0 && download ==0)
+						if(datasource.insertLogin(login,productid)>0 && download ==0)
 						{
-
+							global.setLogin(login);
+							preference.edit().putString("activity", "loggedin").commit();
 							preference.edit().putString("name", null).commit();
 							preference.edit().putString("age", null).commit();
 							preference.edit().putString("gender", null).commit();
@@ -207,7 +203,7 @@ public class loginnew extends Activity implements OnClickListener{
 						}
 						}else{
 							int br = 1;
-							brands1= datasource.retriveBrand();
+							brands1= datasource.retriveBrand(preference.getString("product_id", "1"));
 							if(brands1!=null && brands1.size()>0){
 							for(Brand bra:brands1){
 								if(bra.getBrandStatus().equals("true")|| bra.getBrandStatus().equals("false")){
@@ -254,24 +250,29 @@ public class loginnew extends Activity implements OnClickListener{
 					login.setAge(Integer.parseInt(age_ed.getText().toString().trim()));
 					login.setGender(n);
 					login.setStatus(true);
-					global.setLogin(null);
+					
 					preference.edit().putString("name", name_ed.getText().toString()).commit();
 					preference.edit().putString("age", age_ed.getText().toString().trim()).commit();
 					preference.edit().putString("gender", n).commit();
 					/*Constants.name = name_ed.getText().toString();
 					Constants.age = age_ed.getText().toString().trim();
 					Constants.gender = n;*/
-					if(datasource.insertLogin(login)>0){
+					
+					if(datasource.insertLogin(login,preference.getString("product_id", "1"))>0){
 						edit.putBoolean("logout", false);
+						edit.putInt("offline_userId", datasource.getFirstRecord().getId()).commit();
 						Log.d("abc_login", service.getUser_id()+"_"+service.getProduct_id());
-						edit.putString("pid", service.getProduct_id());
-						edit.putString("uid", service.getUser_id());
-						
+						edit.putString("pid", preference.getString("product_id", "1"));
+						edit.putString("uid", "offline_"+preference.getInt("offline_userId", 1));
+						edit.putString("activity", "loggedin");
 						edit.commit();
-						brands = datasource.retriveBrand();
+						datasource.updateLogin(datasource.getFirstRecord(), preference.getString("product_id", "1"), preference.getString("uid", null));
+						brands = datasource.retriveBrand(preference.getString("product_id", "1"));
 						for(Brand brand:brands){
 							datasource.updateBrand(brand, "false");
 						}
+						global.setLogin(login);
+						
 						Intent i=new Intent(getBaseContext(),dbrand.class);
 						startActivity(i);
 						finish();
@@ -336,25 +337,27 @@ public class loginnew extends Activity implements OnClickListener{
 					pd.dismiss();
 				
 					if(result != null){
-						datasource.resetTables(MySQLiteHelper.BRAND_TABLE);
+						/*datasource.resetTables(MySQLiteHelper.BRAND_TABLE);
 						datasource.resetTables(MySQLiteHelper.FEATURE_TABLE);
 						datasource.resetTables(MySQLiteHelper.CONTRA_TYPE_TABLE);
-						datasource.resetTables(MySQLiteHelper.COMP_TYPE_TABLE);
+						datasource.resetTables(MySQLiteHelper.COMP_TYPE_TABLE);*/
 						try{
 						Log.d("check", result+"_");
-						service.setStatus(result.getString("success"));
+						//service.setStatus(result.getString("success"));
 						service.setUser_id(result.getString("user_id"));
+						Login log = global.getLogin();
+						datasource.updateLogin(datasource.getFirstRecord(), productid, service.getUser_id());
 						//service.setProduct_name(result.getString("product_name"));
 						//service.setProduct_id(result.getString("product_id"));
 						//service.setProduct_name((String)result.getJSONArray("product_name").get(0));
 						//service.setProduct_name((String)result.getJSONArray("product_id").get(0));
-						featureArrayDesc= result.getJSONArray("feature_name");
+						/*featureArrayDesc= result.getJSONArray("feature_name");
 						featureArrayId= result.getJSONArray("feature_id");
 						brandArrayDesc= result.getJSONArray("brand_name");
 						brandArrayId= result.getJSONArray("brand_id");
 						contarFeature = result.getJSONArray("contra_feature");
 						compFeature = result.getJSONArray("comp_feature");
-						brand_logo = result.getJSONArray("brand_logo");
+						brand_logo = result.getJSONArray("brand_logo");*/
 						Editor edit = preference.edit();
 						//Log.d("abc_login", service.getUser_id()+"_"+service.getProduct_id());
 						edit.putString("pid", productid);
@@ -364,7 +367,7 @@ public class loginnew extends Activity implements OnClickListener{
 						catch(Exception e){
 							System.out.println("Error="+e);
 						}
-						List<Feature> featureList = new ArrayList<Service.Feature>();
+						/*List<Feature> featureList = new ArrayList<Service.Feature>();
 						for(int i=0; i<featureArrayDesc.length();i++){
 							Feature feature = new Feature();
 							try {
@@ -561,7 +564,7 @@ public class loginnew extends Activity implements OnClickListener{
 							brandList.add(brand);
 						}
 						service.setBrand(brandList);
-						global.setService(service);
+						global.setService(service);*/
 						/*if(datasource.insertLogin(login)>0)
 						{
 							if(datasource.insertBrand(new Brand(1,"barand1"))>0)

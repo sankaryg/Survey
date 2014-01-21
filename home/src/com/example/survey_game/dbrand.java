@@ -2,13 +2,13 @@ package com.example.survey_game;
 
 
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -16,13 +16,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONObject;
 
@@ -67,12 +62,9 @@ import com.example.survey_game.Util.Constants;
 import com.example.survey_game.WebService.ShowAlert;
 import com.example.survey_game.WebService.UserFunction;
 import com.example.survey_game.adapter.BrandAdapter;
-import com.example.survey_game.home.InsertData;
-import com.example.survey_game.home.Load;
 import com.example.survey_game_fuction.Brand;
 import com.example.survey_game_fuction.ConnectionDetector;
 import com.example.survey_game_fuction.Login;
-import com.example.survey_game_fuction.Service.Brands;
 import com.example.survey_game_fuction.Upload;
 
 public class dbrand extends Activity{
@@ -93,7 +85,7 @@ public class dbrand extends Activity{
 	private List<Upload> uploadList;
 	ConnectionDetector connection;
 	private ShowAlert alert;
-	private AlertDialog alertDialog;
+	private AlertDialog alertDialog,alertDialog1;
 	private RelativeLayout layout;
 	private ImageView quit;
 	private TextView logout;
@@ -103,39 +95,15 @@ public class dbrand extends Activity{
 	public static int br = 1;
 	BrandAdapter adapter;
 	private File file;
+	private boolean promptAlert;
+	private String activity;
 	
 	void downloadFile(Brand up, String fileUrl, String fileName) throws URISyntaxException {
 	    // here you can add folder in which you want the image to be stored
 		String extStorageDirectory = null;
 	    URL myFileUrl = null;
 	    URI uri = null;
-	    //try {
-	    	/*if(fileUrl.indexOf(" ") != -1){
-	    		 uri = new URI(fileUrl.replace(" ", "%20"));
-	    		
-	    	}else
-	    		uri = new URI(fileUrl);*/
-			
-	        /*try{
-	        	
-	        	if (android.os.Environment.getExternalStorageState().equals(
-	        	        android.os.Environment.MEDIA_MOUNTED))
-	        	{*//*
-	        	    File sdCard = Environment.getExternalStorageDirectory();
-	        	    File dir = new File(sdCard+"/img/"+preference.getString("pid","1"));
-	        	    dir.mkdirs();
-	        	    File file = new File(dir, fileName);
-	        	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	        	    bmImg.compress(Bitmap.CompressFormat.PNG, 100, baos);
-	        	    FileOutputStream f = null;
-	        	    f = new FileOutputStream(file);
-	        	    preference.edit().putString(fileUrl, path+"/"+fileName+".jpg").commit();
-	        	    if (f != null) {
-	        	        f.write(baos.toByteArray());
-	        	        f.flush();
-	        	        f.close();
-	        	    }
-	        	}*/
+	    
 	        if (android.os.Environment.getExternalStorageState().equals(
         	        android.os.Environment.MEDIA_MOUNTED)){
 	        	//path = Constants.imagePath+"/"+preference.getString("pid","1");
@@ -149,8 +117,8 @@ public class dbrand extends Activity{
 	        	if(!file.exists()){
 	        		file.mkdir();
 	        	}
-	        	extStorageDirectory += "/img_"+preference.getString("pid","1")+up.getBrandName()+".png";
-	        	File f = new File(extStorageDirectory);
+	        	//extStorageDirectory += "/img_"+preference.getString("pid","1")+up.getBrandName()+".png";
+	        	File f = new File(android.os.Environment.getExternalStorageDirectory()+"/img_"+preference.getString("pid","1"),up.getBrandName()+".png");
 	        	bmImg = BitmapFactory.decodeFile(f.getAbsolutePath());
 	        	if(bmImg!=null){
 	        		up.setBrand_image_path(f.getAbsolutePath());
@@ -163,10 +131,13 @@ public class dbrand extends Activity{
 	        	    bmOptions = new BitmapFactory.Options();
 	        	    bmOptions.inSampleSize = 1;
 	        	    try {
-						myFileUrl = new URL(fileUrl);
+						myFileUrl = new URL(URLEncoder.encode(fileUrl,HTTP.UTF_8));
 					} catch (MalformedURLException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 	    			HttpURLConnection conn = null;
 					try {
@@ -195,8 +166,9 @@ public class dbrand extends Activity{
 	    	        bmImg = BitmapFactory.decodeStream(is);
 
 	        	    OutputStream outStream = null;
-	        	    file=new File(android.os.Environment.getExternalStorageDirectory(),"img_"+preference.getString("pid","1")+"_"+up.getBrandName());
-	                file=new File(extStorageDirectory, "img_"+preference.getString("pid","1")+fileName+".png");
+	        	    //file=new File(android.os.Environment.getExternalStorageDirectory(),"img_"+preference.getString("pid","1")+"_"+up.getBrandName());
+	                //file=new File(extStorageDirectory, "img_"+preference.getString("pid","1")+fileName+".png");
+	        	    File file = new File(android.os.Environment.getExternalStorageDirectory()+"/img_"+preference.getString("pid","1"),up.getBrandName()+".png");
 	        	     try {
 	        	        outStream = new FileOutputStream(file);
 	        	        bmImg.compress(Bitmap.CompressFormat.PNG, 100, outStream);
@@ -249,7 +221,8 @@ public class dbrand extends Activity{
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if(br>=1)
+				br = db.getNoOfBrandPlayed(preference.getString("product_id", "1"));
+				if(br>=2)
 				logout();
 				else
 					alert.showAlertDialog(dbrand.this, "Survey Game", "Please play at least two brand before log out", true);
@@ -278,50 +251,13 @@ public class dbrand extends Activity{
 		tf = Typeface.createFromAsset(getAssets(),font);
 		text.setTypeface(tf);
 		text.setText(text.getText()+"");
-		brands = db.retriveBrand();
+		brands = db.retriveBrand(preference.getString("product_id", "1"));
 		alert = new ShowAlert(this);
 		
-		br = 0;
-		for(Brand brand:brands){
-			if(brand.getBrandStatus().equals("true")){
-				br++;
-			}
-		}
 		
-		noOfButton = brands.size();//db.getNoOfRows();
-		if(noOfButton == br){
-			alertDialog = new AlertDialog.Builder(dbrand.this).create();
-			alertDialog.setMessage("Thank you for playing all the brands!");
-			alertDialog.setTitle("SurveyGame");
-	        
-	        alertDialog.setButton(Dialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
-				
-				@Override
-				public void onClick(DialogInterface arg0, int arg1) {
-					// TODO Auto-generated method stub
-					if(connection.isConnectingToInternet()){
-						uploadList = db.retriveUpload();
-							try{
-								new Load().execute(uploadList);
-								}
-								catch (Exception e) {
-									// TODO: handle exception
-								}
-					
-					}else{
-						alert.showAlertDialog(dbrand.this, "SurveyGame", "Check Your network", true);
-					}
-							
-				}
-			});
-	
-	       alertDialog.show();
-		}else{
-			//alert.showAlertDialog(dbrand.this, "SurveyGame", "Check Your network "+br +"_"+noOfButton, true);
-		}
 		
 		Log.d("check", brands+"_");
-		//Collections.shuffle(brands);
+		Collections.shuffle(brands);
 		Log.d("check before", brands+"_");
 		//if(Constants.storeImage ==null || Constants.storeImage.size() <= 0 )
 		if(connection.isConnectingToInternet())
@@ -360,6 +296,7 @@ public class dbrand extends Activity{
 		grid.setAdapter(adapter);
 		
 	}
+	@SuppressWarnings("unchecked")
 	public void logout(){
 		/*if(connection.isConnectingToInternet()){
 			uploadList = db.retriveUpload();
@@ -380,10 +317,15 @@ public class dbrand extends Activity{
 					++br;
 				}
 			}*/
-			uploadList = db.retriveUpload();
+		activity = preference.getString("activity", null);
+			uploadList = db.retriveUpload(preference.getString("uid", null));
+			List<Login> Offlinelogin = db.retriveUsers();
 			//if(br>=2){
 				if(connection.isConnectingToInternet()){
-					if(global.getLogin()!=null){
+					if(Offlinelogin.size()>0){
+						new InsertData().execute(Offlinelogin);
+					}else 
+					if(activity!=null){
 					
 						try{
 							new Load().execute(uploadList);
@@ -394,28 +336,49 @@ public class dbrand extends Activity{
 				Editor edit = preference.edit();
 				edit.putInt("upload", 2);
 				edit.putInt("playMode", 2);
-				edit.clear();
+				preference.edit().putString("activity", null).commit();
+				//edit.clear();
 				edit.commit();
-							db.resetTables(MySQLiteHelper.TABLE_NAME);
-						db.resetTables(MySQLiteHelper.server_table);
+							//db.resetTables(MySQLiteHelper.TABLE_NAME);
+						//db.resetTables(MySQLiteHelper.server_table);
 						global.setLogin(null);
 				Toast.makeText(dbrand.this, "success", Toast.LENGTH_LONG).show();
+				Intent intent = new Intent(dbrand.this, home.class);
+				startActivity(intent);
+				
 				finish();
-					}else{
+					}/*else{
 						Constants.name = preference.getString("name", null);
 						Constants.age = preference.getString("age", null);
 						Constants.gender = preference.getString("gender", null);
 						if(Constants.name!=null && Constants.age!=null && Constants.gender !=null)
 							new InsertData().execute();
-							/*else
-							alert.showAlertDialog(dbrand.this, "Warning", "You are not logged in and no data to upload", true);*/
+							else
+							alert.showAlertDialog(dbrand.this, "Warning", "You are not logged in and no data to upload", true);
 
 						
 
 					}
-					}
+*/					}
 				else{
-					alert.showAlertDialog(dbrand.this, "Warning", "Check your network connection", true);
+					Editor edit = preference.edit();
+					edit.putInt("upload", 2);
+					edit.putInt("playMode", 2);
+					preference.edit().putString("activity", null).commit();
+					//edit.clear();
+					edit.commit();
+					brands = db.retriveBrand(preference.getString("product_id", "1"));
+					for(Brand brand:brands){
+						db.updateBrand(brand, "false");
+					}
+								//db.resetTables(MySQLiteHelper.TABLE_NAME);
+							//db.resetTables(MySQLiteHelper.server_table);
+							global.setLogin(null);
+					Toast.makeText(dbrand.this, "success", Toast.LENGTH_LONG).show();
+					Intent intent = new Intent(dbrand.this, home.class);
+					startActivity(intent);
+					finish();
+					//alert.showAlertDialog(dbrand.this, "Warning", "Check your network connection", true);
 				}
 			//}
 			//}else{
@@ -424,7 +387,7 @@ public class dbrand extends Activity{
 				//}
 			
 	}
-	class InsertData extends AsyncTask<Void, Void, String>{
+	class InsertData extends AsyncTask<List<Login>, Void, String>{
 		@Override
 		protected void onPreExecute() {
 			// TODO Auto-generated method stub
@@ -441,17 +404,57 @@ public class dbrand extends Activity{
 			
 		}
 		@Override
-		protected String doInBackground(Void... params) {
+		protected String doInBackground(List<Login>... params) {
 			// TODO Auto-generated method stub
 			UserFunction user = new UserFunction();
 			JSONObject jboj = null;
 			String str = null;
+			List<Login> offline = params[0];
+			for(Login log:offline){
 			try{
-				jboj = user.userRegistration(Constants.name, Constants.age, Constants.gender,Constants.productID);
-				str = (jboj.getString("user_id"));//+"_"+jboj.getString("product_id");
+				jboj = user.userRegistration(log.getName(), String.valueOf(log.getAge()), log.getGender(),log.getProduct_id());
+				uploadList = db.retriveUpload(log.getDb_user_id());
+				db.updateLogin(log, log.getProduct_id(), jboj.getString("user_id"));
+				for(Upload up:uploadList){
+					up.setAge(jboj.getString("user_id"));
+					up.setName(log.getProduct_id());// setName(log.getName());//product id
+					db.updateUpload(up);
+				}
+				for(Upload up:uploadList){
+					try{
+						
+					JSONObject jobj = user.userUpload(up,android.text.format.DateFormat.format("yyyy-MM-dd hh:mm:ss", new java.util.Date()),alert.getDeviceID(dbrand.this));
+					str = jobj.getString("success");
+					}catch (Exception e) {
+						// TODO: handle exception
+						str = null;
+					}
+				}
+				uploadList = db.retriveUpload(jboj.getString("user_id"));
+				for(Upload up:uploadList){
+					db.deleteUpload(up.getAge());
+					brands = db.retriveBrand(up.getName());
+					for(Brand brand:brands){
+						db.updateBrand(brand, "false");
+					}
+				}
 				
+				Editor edit = preference.edit();
+				edit.putBoolean("logout", true);
+				edit.putInt("upload", 2);
+				edit.putInt("playMode", 2);
+				if(connection.isConnectingToInternet())
+				edit.putString("activity", null);
+				//edit.clear();
+				db.deleteLogin(jboj.getString("user_id"));
+				//db.deleteUpload(preference.getString("uid", null));
+				
+				edit.commit();
+				str = (jboj.getString("user_id"));//+"_"+jboj.getString("product_id");
+				//db.u
 			}catch(Exception e){
 				str = null;
+			}
 			}
 			return str;
 		}
@@ -462,16 +465,18 @@ public class dbrand extends Activity{
 			if(pd!=null && pd.isShowing())
 				pd.dismiss();
 			if(result!= null){
-				Constants.name="";Constants.age="";Constants.gender="";
-			uploadList = db.retriveUpload();
+			/*	Constants.name="";Constants.age="";Constants.gender="";
+			uploadList = db.retriveUpload(preference.getString("uid", null));
 			
 			for(Upload up:uploadList){
 				up.setAge(result);
 				up.setName(preference.getString("pid","1"));// setName(log.getName());//product id
 				db.updateUpload(up);
 			}
-			db.resetTables(MySQLiteHelper.TABLE_NAME);
-			uploadList = db.retriveUpload();
+			db.deleteLogin(preference.getString("uid", null));*/
+			//db.resetTables(MySQLiteHelper.TABLE_NAME);
+				
+			uploadList = db.retriveUpload(preference.getString("uid", null));
 		if(uploadList!=null&&uploadList.size()>0){
 			if(connection.isConnectingToInternet()){
 				try{
@@ -485,30 +490,135 @@ public class dbrand extends Activity{
 		edit.putInt("playMode", 2);
 		//edit.clear();
 		edit.commit();
-		db.resetTables(MySQLiteHelper.server_table);
+		db.deleteUpload(preference.getString("uid", null));
+		//db.resetTables(MySQLiteHelper.server_table);
 		Toast.makeText(dbrand.this, "success", Toast.LENGTH_LONG).show();
-		}
+		
+			}
 		else{
 			alert.showAlertDialog(dbrand.this, "Warning", "Check your network connection", true);
 		}
 
 		}
+		Intent intent = new Intent(dbrand.this, home.class);
+		startActivity(intent);
+		finish();
 		}else{
 			alert.showAlertDialog(dbrand.this, "Error", "Unable to process server", true);
 		}
 	}
 	}	
 	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+	}
+	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		// TODO Auto-generated method stub
 		outState.putInt("br", br);
 	}
-	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		preference.edit().putBoolean("pause", true).commit();
+		promptAlert = preference.getBoolean("pause", true);
+		super.onPause();
+	}
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		if(promptAlert){
+			 if (alertDialog1 != null) {
+					alertDialog1.cancel();
+			 }else{
+					alertDialog1 = new AlertDialog.Builder(dbrand.this).create();
+					alertDialog1.setMessage("Are you "+db.getFirstRecord().getName()+"? Yes to proceed. No to Logout");
+					alertDialog1.setTitle("EXIT");
+					// Setting alert dialog icon
+					// alertDialog.setIcon((status) ? R.drawable.success :
+					// R.drawable.fail);
+
+					// Setting OK Button
+					alertDialog1.setButton(Dialog.BUTTON_POSITIVE, "YES",
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface arg0, int arg1) {
+									// TODO Auto-generated method stub
+									alertDialog1.cancel();
+
+								}
+							});
+					alertDialog1.setButton(Dialog.BUTTON_NEGATIVE, "NO",
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface arg0, int arg1) {
+									alertDialog1.cancel();
+									logout();
+								}
+							});
+					// Showing Alert Message
+					alertDialog1.show();
+			//alert.showAlertDialog(dbrand.this, "SurveyGame", "Check Your network", true);
+			Toast.makeText(dbrand.this, "User Verification", Toast.LENGTH_SHORT).show();
+			preference.edit().putBoolean("pause", false).commit();
+			promptAlert = false;
+		}
 		
+		}
+		{
+			br = db.getNoOfBrandPlayed(preference.getString("product_id", "1"));
+			/*for(Brand brand:brands){
+				if(brand.getBrandStatus().equals("true")){
+					//br++;
+					br = br+1;
+				}
+			}*/
+			
+			noOfButton = brands.size();//db.getNoOfRows();
+			if(noOfButton == br){
+				if(alertDialog1!=null)
+					alertDialog1.cancel();
+				alertDialog = new AlertDialog.Builder(dbrand.this).create();
+				alertDialog.setMessage("Thank you for playing all the brands!");
+				alertDialog.setTitle("SurveyGame");
+		        
+		        alertDialog.setButton(Dialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						// TODO Auto-generated method stub
+						if(connection.isConnectingToInternet()){
+							uploadList = db.retriveUpload(preference.getString("uid", null));
+								try{
+									new Load().execute(uploadList);
+									}
+									catch (Exception e) {
+										// TODO: handle exception
+									}
+						
+						}else{
+							alert.showAlertDialog(dbrand.this, "SurveyGame", "Check Your network", true);
+						}
+								
+					}
+				});
+		
+		       alertDialog.show();
+		}
+		//else{
+			//alert.showAlertDialog(dbrand.this, "SurveyGame", "Check Your network "+br +"_"+noOfButton, true);
+		}
+	}
+	@Override
+	protected void onRestart() {
+		// TODO Auto-generated method stub
+		promptAlert = true;
+		preference.edit().putBoolean("pause", true).commit();
+		super.onRestart();
 	}
 		private void unbindDrawables(View view) {
         System.gc();
@@ -590,9 +700,9 @@ public class dbrand extends Activity{
 					File file = new File(brand.getBrand_image_path());
 					file.delete();
 				}*/
-				uploadList = db.retriveUpload();
+				uploadList = db.retriveUpload(preference.getString("uid", null));
 				for(Upload up:uploadList){
-					db.deleteUpload(up);
+					db.deleteUpload(up.getAge());
 				}
 				Editor edit = preference.edit();
 				edit.putBoolean("logout", true);
@@ -603,11 +713,18 @@ public class dbrand extends Activity{
 				//edit.clear();
 				
 				edit.commit();
-				
-				db.resetTables(MySQLiteHelper.TABLE_NAME);
-				db.resetTables(MySQLiteHelper.server_table);
+				brands = db.retriveBrand(preference.getString("product_id", "1"));
+				for(Brand brand:brands){
+					db.updateBrand(brand, "false");
+				}
+				db.deleteLogin(preference.getString("uid", null));
+				db.deleteUpload(preference.getString("uid", null));
+				//db.resetTables(MySQLiteHelper.TABLE_NAME);
+				//db.resetTables(MySQLiteHelper.server_table);
 				Toast.makeText(dbrand.this, "success", Toast.LENGTH_LONG).show();
 			global.setLogin(null);
+			Intent intent = new Intent(dbrand.this, home.class);
+			startActivity(intent);
 			finish();
 				
 			}else{

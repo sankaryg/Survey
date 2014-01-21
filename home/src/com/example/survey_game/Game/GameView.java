@@ -314,7 +314,7 @@ public class GameView extends SurfaceView {
 			ballcount = global.getBallcount();
 			featureList = global.getFeatureList();
 			 if(featureList == null)
-				 featureList = db.retriveFeature();
+				 featureList = db.retriveFeature(preference1.getString("product_id", "1"));
 			list = global.getList();
 			
 			}else{
@@ -322,7 +322,7 @@ public class GameView extends SurfaceView {
 			millisRemaining = time;
 			scorenumber = 0;
 			ballcount = 0;
-			featureList = db.retriveFeature();
+			featureList = db.retriveFeature(preference1.getString("product_id", "1"));
 			
 		}
 		
@@ -334,8 +334,8 @@ public class GameView extends SurfaceView {
 		this.uid = uid;
 		this.pid = pid;
 		
-		compList = db.retriveCompFeature();
-		contraList = db.retriveContraFeature();
+		compList = db.retriveCompFeature(preference1.getString("product_id", "1"));
+		contraList = db.retriveContraFeature(preference1.getString("product_id", "1"));
 		score = new ArrayList<Score>();
 		enemies = new ArrayList<Enemy>();
 
@@ -350,7 +350,7 @@ public class GameView extends SurfaceView {
 
 		
 		log = db.getFirstRecord();
-		uploadList = db.retriveUpload();
+		uploadList = db.retriveUpload(preference1.getString("uid", null));
 		if (uploadList.size() > 0) {
 			str = "update";
 			boolean newdata = true;

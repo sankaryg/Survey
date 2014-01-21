@@ -143,9 +143,11 @@ public class BrandAdapter extends ArrayAdapter<Brands>{
 			}
 		});
 		holder.productName.setText(optionList.get(position).getBrandName());
-		String path = Environment.getExternalStorageDirectory()+"/img_"+preference.getString("pid","1")+optionList.get(position).getBrandName()+".png";//optionList.get(position).getBrand_image_path();//preference.getString(optionList.get(position).getBrand_image_path(),null);
+		String path = android.os.Environment.getExternalStorageDirectory()+"/img_"+preference.getString("pid","1");//+optionList.get(position).getBrandName()+".png";//optionList.get(position).getBrand_image_path();//preference.getString(optionList.get(position).getBrand_image_path(),null);
 		if(path!=null){
-		File file = new File(path);
+			File file = new File(android.os.Environment.getExternalStorageDirectory()+"/img_"+preference.getString("pid","1"),optionList.get(position).getBrandName()+".png");
+
+//		File file = new File(path);
 		if(file.exists())
 		holder.productImage.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
 		}

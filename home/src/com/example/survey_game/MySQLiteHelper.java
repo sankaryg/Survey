@@ -13,14 +13,14 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	public static final String AGE = "age";
 	public static final String GENDER = "gender";
 
-	private static final String DATABASE_NAME = "Survey_Game.db";
-	private static final int DATABASE_VERSION = 2;
+	private static final String DATABASE_NAME = "Survey_Game_new.db";
+	private static final int DATABASE_VERSION = 5;
 
 	// Database creation sql statement
 	private static final String DATABASE_CREATE = "create table " + TABLE_NAME
 			+ "(" + USER_ID + " integer primary key autoincrement, " + NAME
 			+ " text not null, " + AGE + " integer not null," + GENDER
-			+ " text not null, status text not null );";
+			+ " text not null, status text not null,product_id text not null,db_user_id text null );";
 
 	/* table for list of brands */
 
@@ -33,7 +33,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	private static final String BRAND_TABLE_QUERY = "create table "
 			+ BRAND_TABLE + "(" + BRAND_ID
 			+ " integer primary key autoincrement, " + BRAND_USER_ID
-			+ " integer not null, " + BRNAD_NAME + " text not null, "+ BRAND_PATH + " text not null, status tet not null);";
+			+ " integer not null, " + BRNAD_NAME + " text not null, "+ BRAND_PATH + " text not null, status text not null,product_id text not null);";
 	/* table for list of feature */
 	public static final String FEATURE_TABLE = "feature";
 	public static final String FEATURE_ID = "id";
@@ -43,7 +43,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	private static final String FEATURE_TABLE_QUERY = "create table "
 			+ FEATURE_TABLE + "(" + FEATURE_ID
 			+ " integer primary key autoincrement, " + BRAND_FEATURE_ID
-			+ " integer not null, " + FEATURE_NAME + " text not null);";
+			+ " integer not null, " + FEATURE_NAME + " text not null,product_id text not null);";
 
 	public static final String CONTRA_TYPE_TABLE = "contra";
 
@@ -60,7 +60,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 			+ " integer primary key autoincrement, " + CONTRA_FEATURE_ID
 			+ " text not null, " + CONTRA_TYPE1 + " text not null, "+ CONTRA_TYPE2
 			+ " text not null, " + CONTRA_TYPE3	+ " text not null, "+ CONTRA_TYPE4
-			+ " text not null, " + CONTRA_TYPE5 + " text not null );";
+			+ " text not null, " + CONTRA_TYPE5 + " text not null,product_id text not null );";
 
 	public static final String COMP_TYPE_TABLE = "comp";
 
@@ -77,7 +77,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 			+ " integer primary key autoincrement, " + COMP_FEATURE_ID
 			+ " text not null, " + COMP_TYPE1 + " text not null, " + COMP_TYPE2
 			+ " text not null, " + COMP_TYPE3 + " text not null, " + COMP_TYPE4
-			+ " text not null, " + COMP_TYPE5 + " text not null );";
+			+ " text not null, " + COMP_TYPE5 + " text not null,product_id text not null );";
 
 	public static final String server_table = "server";
 	public static final String server_id = "_id";
@@ -97,10 +97,11 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	public static final String product_id = "_id";
 	public static final String product_name = "product_name";
 	public static final String product_server_id = "product_id";
+	public static final String product_server_image = "product_image";
 	public static final String PRODUCT_TABLE_QUERY = "create table "
 			+ PRODUCT_TABLE + "(" + product_id
 			+ " integer primary key autoincrement, " + product_name
-			+ " text not null, " + product_server_id + " text not null);";
+			+ " text not null, " + product_server_id + " text not null, "+ product_server_image +" text null);";
 	public MySQLiteHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}

@@ -18,7 +18,11 @@ public class UserFunction {
 		// TODO Auto-generated constructor stub
 		jsonParser = new JSONParser();
 	}
-	
+	public JSONObject checkUpdate(){
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("task", "checkupdate"));
+		return jsonParser.getJSONFromUrl(Home_Url, params);
+	}
 	public JSONObject userRegistration(String uname,String age,String gender, String productid){
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("task", "register"));
@@ -46,6 +50,13 @@ public class UserFunction {
 		// TODO Auto-generated method stub
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("task", string));
+		return jsonParser.getJSONFromUrl(Home_Url, params);
+	}
+	public JSONObject userProductById(String product_id) {
+		// TODO Auto-generated method stub
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("task", "productlist"));
+		params.add(new BasicNameValuePair("productid", product_id));
 		return jsonParser.getJSONFromUrl(Home_Url, params);
 	}
 }
