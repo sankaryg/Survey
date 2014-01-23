@@ -17,6 +17,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
@@ -84,6 +85,7 @@ public class GameEnd extends Activity{
 	private boolean promptAlert;
 	private AlertDialog alertDialog1;
 	private String activity;
+	private List<Brand> brandsList;
 	
 	
 	@Override
@@ -166,6 +168,7 @@ public class GameEnd extends Activity{
 				edit.putInt("upload", 2);
 				edit.putInt("playMode", 2);
 				edit.commit();
+				preference.edit().putBoolean("end_a", true).commit();
 				Intent startGame = new Intent(getApplicationContext(), dbrand.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startGame.putExtra("bid", bid);
 				startActivity(startGame);
@@ -373,7 +376,13 @@ public class GameEnd extends Activity{
 				}
 			}
 		});*/
-
+		brandsList = db.retriveBrand(preference.getString("product_id", "1"));
+		for(Brand brand:brandsList){
+		if(bid.equals(String.valueOf(brand.getBrandId()))){
+			brand.setBrandStatus("true");
+			db.updateBrand(brand,"true");
+		}
+		}
 	}
 	@SuppressWarnings("unchecked")
 	public void logout(){

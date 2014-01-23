@@ -58,7 +58,9 @@ public class home extends Activity{
 	private AlertDialog alertDialog;
 	public ProgressDialog pd;
 	private String activity;
-	
+	private int br;
+	private AlertDialog alertDialog1;
+
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void onCreate(Bundle b)
 	{
@@ -81,9 +83,11 @@ public class home extends Activity{
 		login=(ImageView)findViewById(R.id.login);
 		login.setOnClickListener(new OnClickListener() {
 			
+			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				preference.edit().putBoolean("end_a", false).commit();
 				if(activity!=null){
 					Intent i=new Intent(getBaseContext(),dbrand.class);
 					startActivity(i);
@@ -101,12 +105,61 @@ public class home extends Activity{
 						startActivity(i);
 						finish();
 					}*/
-					Intent i=new Intent(getBaseContext(),ProductSelectActivity.class);
-					startActivity(i);
-					finish();
+					List<Login> Offlinelogin = db.retriveUsers();
+					uploadList = db.retriveUpload(preference.getString("uid", null));
+					
+					if(connection.isConnectingToInternet() && (Offlinelogin.size() > 0 && uploadList.size()>0) ){
+						
+					 if (alertDialog1 != null) {
+							alertDialog1.cancel();
+					 }else{
+							alertDialog1 = new AlertDialog.Builder(home.this).create();
+							alertDialog1.setMessage("You have some data to upload? Yes to upload. No to continue");
+							alertDialog1.setTitle("EXIT");
+							// Setting alert dialog icon
+							// alertDialog.setIcon((status) ? R.drawable.success :
+							// R.drawable.fail);
+
+							// Setting OK Button
+							alertDialog1.setButton(Dialog.BUTTON_POSITIVE, "YES",
+									new DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(DialogInterface arg0, int arg1) {
+											// TODO Auto-generated method stub
+											alertDialog1.cancel();
+											abc();
+										}
+									});
+							alertDialog1.setButton(Dialog.BUTTON_NEGATIVE, "NO",
+									new DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(DialogInterface arg0, int arg1) {
+											alertDialog1.cancel();
+											//logout();
+											Intent i=new Intent(getBaseContext(),ProductSelectActivity.class);
+											startActivity(i);
+											finish();
+							
+										}
+									});
+							// Showing Alert Message
+							alertDialog1.show();
+					 }
 					/*Intent i=new Intent(getBaseContext(),ProductSelectActivity.class);
 					startActivity(i);
 					finish();*/
+				}else{
+					/*if(connection.isConnectingToInternet()){
+					if(Offlinelogin.size()>0 && uploadList.size() == 0){
+						db.resetTables(MySQLiteHelper.TABLE_NAME);
+					}
+					}*/
+					Intent i=new Intent(getBaseContext(),ProductSelectActivity.class);
+					startActivity(i);
+					finish();
+				}
 				}
 				
 			}
@@ -141,67 +194,72 @@ public class home extends Activity{
 			startActivityForResult(i, RESULT_SETTINGS);
 			break;
 		case R.id.menu_upload:
-			activity = preference.getString("activity", null);
-			List<Login> Offlinelogin = db.retriveUsers();
-			if(activity!=null){
-			br = db.getNoOfBrandPlayed((preference.getString("product_id", "1")));
-			/*for(Brand bra:brands){
-				if(bra.getBrandStatus().equals("true")){
-					//++br;
-					br = br+1;
-				}
-			}*/
-			uploadList = db.retriveUpload(preference.getString("uid", null));
-			if(br>=2){
-				if(connection.isConnectingToInternet()){
-					if(Offlinelogin.size()>0){
-						new InsertData().execute(Offlinelogin);
-					}else {
-						try{
-							new Load().execute(uploadList);
-							}
-							catch (Exception e) {
-								// TODO: handle exception
-							}
-				Editor edit = preference.edit();
-				edit.putInt("upload", 2);
-				edit.putInt("playMode", 2);
-				edit.clear();
-				edit.commit();
-				db.deleteLogin(preference.getString("uid", null));
-				db.deleteUpload(preference.getString("uid", null));
-							//db.resetTables(MySQLiteHelper.TABLE_NAME);
-						//db.resetTables(MySQLiteHelper.server_table);
-						global.setLogin(null);
-				Toast.makeText(home.this, "success", Toast.LENGTH_LONG).show();
-				finish();
-					}
-				}
-				else{
-					alert.showAlertDialog(home.this, "Warning", "Check your network connection", true);
-				}
-			}else{
-				alert.showAlertDialog(home.this, "Warning", "You need to play atleast two brand", true);
-			}
-			}else{
-				{
-					/*Constants.name = preference.getString("name", null);
-					Constants.age = preference.getString("age", null);
-					Constants.gender = preference.getString("gender", null);
-					if(Constants.name!=null && Constants.age!=null && Constants.gender !=null)
-					new InsertData().execute();
-					else*/
-					alert.showAlertDialog(home.this, "Warning", "You are not logged in and no data to upload", true);
-
-				}
-				
-				
-				}
-			break;
+	abc();
+	break;
 
 		}
 
 		return true;
+	}
+	private void abc(){
+		activity = preference.getString("activity", null);
+		
+		//if(activity!=null){
+		br = db.getNoOfBrandPlayed((preference.getString("product_id", "1")));
+		/*for(Brand bra:brands){
+			if(bra.getBrandStatus().equals("true")){
+				//++br;
+				br = br+1;
+			}
+		}*/
+		List<Login> Offlinelogin = db.retriveUsers();
+		uploadList = db.retriveUpload(preference.getString("uid", null));
+		//if(br>=2){
+			if(connection.isConnectingToInternet()){
+				if(Offlinelogin.size()>0){
+					new InsertData().execute(Offlinelogin);
+				}else {
+					try{
+						new Load().execute(uploadList);
+						}
+						catch (Exception e) {
+							// TODO: handle exception
+						}
+			Editor edit = preference.edit();
+			edit.putInt("upload", 2);
+			edit.putInt("playMode", 2);
+			edit.clear();
+			edit.commit();
+			db.deleteLogin(preference.getString("uid", null));
+			db.deleteUpload(preference.getString("uid", null));
+						//db.resetTables(MySQLiteHelper.TABLE_NAME);
+					//db.resetTables(MySQLiteHelper.server_table);
+					global.setLogin(null);
+			Toast.makeText(home.this, "success", Toast.LENGTH_LONG).show();
+			finish();
+				}
+			}
+			else{
+				alert.showAlertDialog(home.this, "Warning", "Check your network connection", true);
+			}
+		/*}else{
+			alert.showAlertDialog(home.this, "Warning", "You need to play atleast two brand", true);
+		}*/
+		/*//}else{
+			{
+				Constants.name = preference.getString("name", null);
+				Constants.age = preference.getString("age", null);
+				Constants.gender = preference.getString("gender", null);
+				if(Constants.name!=null && Constants.age!=null && Constants.gender !=null)
+				new InsertData().execute();
+				else
+				alert.showAlertDialog(home.this, "Warning", "You are not logged in and no data to upload", true);
+
+			}
+			
+			
+			}
+*/	
 	}
 	/*class InsertData extends AsyncTask<Void, Void, String>{
 		@Override
@@ -273,10 +331,7 @@ public class home extends Activity{
 			pd.setIndeterminate(false);
 			pd.show();
 		}
-		public void execute(String name, String age, String gender) {
-			// TODO Auto-generated method stub
-			
-		}
+		
 		@Override
 		protected String doInBackground(List<Login>... params) {
 			// TODO Auto-generated method stub
@@ -374,7 +429,7 @@ public class home extends Activity{
 		}
 
 		}
-		finish();
+		//finish();
 		}else{
 			alert.showAlertDialog(home.this, "Error", "Unable to process server", true);
 		}
@@ -518,7 +573,7 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 				edit.putString("activity", null);
 				edit.clear();
 				edit.commit();
-			finish();
+			//finish();
 			}else{
 				try{
 				alert.showAlertDialog(home.this, "Error", "Unable to process server", true);

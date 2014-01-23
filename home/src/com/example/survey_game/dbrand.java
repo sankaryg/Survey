@@ -343,10 +343,10 @@ public class dbrand extends Activity{
 						//db.resetTables(MySQLiteHelper.server_table);
 						global.setLogin(null);
 				Toast.makeText(dbrand.this, "success", Toast.LENGTH_LONG).show();
-				Intent intent = new Intent(dbrand.this, home.class);
+				/*Intent intent = new Intent(dbrand.this, home.class);
 				startActivity(intent);
 				
-				finish();
+				finish();*/
 					}/*else{
 						Constants.name = preference.getString("name", null);
 						Constants.age = preference.getString("age", null);
@@ -570,47 +570,7 @@ public class dbrand extends Activity{
 		
 		}
 		{
-			br = db.getNoOfBrandPlayed(preference.getString("product_id", "1"));
-			/*for(Brand brand:brands){
-				if(brand.getBrandStatus().equals("true")){
-					//br++;
-					br = br+1;
-				}
-			}*/
-			
-			noOfButton = brands.size();//db.getNoOfRows();
-			if(noOfButton == br){
-				if(alertDialog1!=null)
-					alertDialog1.cancel();
-				alertDialog = new AlertDialog.Builder(dbrand.this).create();
-				alertDialog.setMessage("Thank you for playing all the brands!");
-				alertDialog.setTitle("SurveyGame");
-		        
-		        alertDialog.setButton(Dialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface arg0, int arg1) {
-						// TODO Auto-generated method stub
-						if(connection.isConnectingToInternet()){
-							uploadList = db.retriveUpload(preference.getString("uid", null));
-								try{
-									new Load().execute(uploadList);
-									}
-									catch (Exception e) {
-										// TODO: handle exception
-									}
-						
-						}else{
-							alert.showAlertDialog(dbrand.this, "SurveyGame", "Check Your network", true);
-						}
-								
-					}
-				});
-		
-		       alertDialog.show();
-		}
-		//else{
-			//alert.showAlertDialog(dbrand.this, "SurveyGame", "Check Your network "+br +"_"+noOfButton, true);
+			showAll();
 		}
 	}
 	@Override
@@ -855,4 +815,56 @@ public class dbrand extends Activity{
 		
 		
 	}
+	public void showAll() {
+		// TODO Auto-generated method stub
+		//if(preference.getBoolean("abc", false)){
+			//preference.edit().putBoolean("abc", true).commit();
+		br = db.getNoOfBrandPlayed(preference.getString("product_id", "1"));
+		
+		/*if(preference.getBoolean("end_a", true))
+		br = br+1;*/
+			/*for(Brand brand:brands){
+			if(brand.getBrandStatus().equals("true")){
+				//br++;
+				br = br+1;
+			}
+		}*/
+		
+		noOfButton = brands.size();//db.getNoOfRows();
+		if(noOfButton == br){
+			if(alertDialog1!=null)
+				alertDialog1.cancel();
+			alertDialog = new AlertDialog.Builder(dbrand.this).create();
+			alertDialog.setMessage("Thank you for playing all the brands!");
+			alertDialog.setTitle("SurveyGame");
+	        
+	        alertDialog.setButton(Dialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {
+					// TODO Auto-generated method stub
+					/*if(connection.isConnectingToInternet()){
+						uploadList = db.retriveUpload(preference.getString("uid", null));
+							try{
+								new Load().execute(uploadList);
+								}
+								catch (Exception e) {
+									// TODO: handle exception
+								}
+					
+					}else{
+						alert.showAlertDialog(dbrand.this, "SurveyGame", "Check Your network", true);
+					}*/
+					logout();
+							
+				}
+			});
+	
+	       alertDialog.show();
+	}
+	//else{
+		//alert.showAlertDialog(dbrand.this, "SurveyGame", "Check Your network "+br +"_"+noOfButton, true);
+	
+	}
+	//}
 }

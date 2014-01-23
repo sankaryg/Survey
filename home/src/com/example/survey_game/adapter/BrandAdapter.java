@@ -6,14 +6,19 @@ import java.util.List;
 
 import com.example.survey_game.DBfunction;
 import com.example.survey_game.R;
+import com.example.survey_game.dbrand;
 import com.example.survey_game.Game.GameActivity;
 import com.example.survey_game.adapter.ProductAdapter.ViewHolder;
+import com.example.survey_game.dbrand.Load;
 import com.example.survey_game.entity.Product;
 import com.example.survey_game_fuction.Brand;
 import com.example.survey_game_fuction.Service.Brands;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -40,6 +45,9 @@ public class BrandAdapter extends ArrayAdapter<Brands>{
 	private SharedPreferences preference;
 	DBfunction db;
 	private int uploadLimit;
+	private int br;
+	private List<Brand> brands;
+	private int noOfButton;
 
 	public BrandAdapter(Context context, int textViewResourceId, List<Brands> list) {
 		super(context, textViewResourceId);
@@ -151,6 +159,19 @@ public class BrandAdapter extends ArrayAdapter<Brands>{
 		if(file.exists())
 		holder.productImage.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
 		}
+
+		br = db.getNoOfBrandPlayed(preference.getString("product_id", "1"));
+		brands = db.retriveBrand(preference.getString("product_id", "1"));
+		noOfButton = brands.size();//db.getNoOfRows();
+		if(noOfButton == br){
+			
+				//preference.edit().putBoolean("abc", true).commit();
+			//((dbrand)context).showAll();
+			
+		}
+	//else{
+		//alert.showAlertDialog(dbrand.this, "SurveyGame", "Check Your network "+br +"_"+noOfButton, true);
+	
 		return convertView;
 	}
 
