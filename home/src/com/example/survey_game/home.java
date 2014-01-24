@@ -219,6 +219,7 @@ public class home extends Activity{
 				if(Offlinelogin.size()>0){
 					new InsertData().execute(Offlinelogin);
 				}else {
+					if(uploadList.size()>0){
 					try{
 						new Load().execute(uploadList);
 						}
@@ -236,7 +237,11 @@ public class home extends Activity{
 					//db.resetTables(MySQLiteHelper.server_table);
 					global.setLogin(null);
 			Toast.makeText(home.this, "success", Toast.LENGTH_LONG).show();
-			finish();
+			//finish();
+				}
+					else{
+						alert.showAlertDialog(home.this, "Survey", "No data to upload", true);	
+					}
 				}
 			}
 			else{

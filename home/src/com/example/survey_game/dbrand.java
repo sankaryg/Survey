@@ -130,14 +130,13 @@ public class dbrand extends Activity{
 	        	    BitmapFactory.Options bmOptions;
 	        	    bmOptions = new BitmapFactory.Options();
 	        	    bmOptions.inSampleSize = 1;
+	        	    
 	        	    try {
-						myFileUrl = new URL(URLEncoder.encode(fileUrl,HTTP.UTF_8));
+	        	    	//String str = URLEncoder.encode(fileUrl,HTTP.UTF_8);
+						myFileUrl = new URL(fileUrl);
 					} catch (MalformedURLException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
-					} catch (UnsupportedEncodingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}
 	    			HttpURLConnection conn = null;
 					try {
