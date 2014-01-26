@@ -133,7 +133,7 @@ public class dbrand extends Activity{
 	        	    
 	        	    try {
 	        	    	if(fileUrl.equals("http://annanagaronline.com/survey/logo/hp 2.jpg"))
-	        	    		fileUrl = fileUrl.trim();
+	        	    		fileUrl = fileUrl.replace(" ", "");
 	        	    	//String str = URLEncoder.encode(fileUrl,HTTP.UTF_8);
 						myFileUrl = new URL(fileUrl);
 					} catch (MalformedURLException e1) {
