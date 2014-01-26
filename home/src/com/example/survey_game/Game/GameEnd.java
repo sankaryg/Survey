@@ -737,7 +737,9 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 		if(promptAlert){
 			 if (alertDialog1 != null) {
 					alertDialog1.cancel();
-			 }else{
+			 }
+			 //else
+			 {
 					alertDialog1 = new AlertDialog.Builder(GameEnd.this).create();
 					alertDialog1.setMessage("Are you "+db.getFirstRecord().getName()+"? Yes to proceed. No to Logout");
 					alertDialog1.setTitle("EXIT");

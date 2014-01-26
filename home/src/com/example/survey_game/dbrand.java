@@ -132,6 +132,8 @@ public class dbrand extends Activity{
 	        	    bmOptions.inSampleSize = 1;
 	        	    
 	        	    try {
+	        	    	if(fileUrl.equals("http://annanagaronline.com/survey/logo/hp 2.jpg"))
+	        	    		fileUrl = fileUrl.trim();
 	        	    	//String str = URLEncoder.encode(fileUrl,HTTP.UTF_8);
 						myFileUrl = new URL(fileUrl);
 					} catch (MalformedURLException e1) {
@@ -531,7 +533,9 @@ public class dbrand extends Activity{
 		if(promptAlert){
 			 if (alertDialog1 != null) {
 					alertDialog1.cancel();
-			 }else{
+			 }
+			 //else
+			 {
 					alertDialog1 = new AlertDialog.Builder(dbrand.this).create();
 					alertDialog1.setMessage("Are you "+db.getFirstRecord().getName()+"? Yes to proceed. No to Logout");
 					alertDialog1.setTitle("EXIT");
