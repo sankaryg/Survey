@@ -377,6 +377,8 @@ public class dbrand extends Activity{
 							global.setLogin(null);
 					Toast.makeText(dbrand.this, "success", Toast.LENGTH_LONG).show();
 					Intent intent = new Intent(dbrand.this, home.class);
+					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					
 					startActivity(intent);
 					finish();
 					//alert.showAlertDialog(dbrand.this, "Warning", "Check your network connection", true);
@@ -502,6 +504,8 @@ public class dbrand extends Activity{
 
 		}
 		Intent intent = new Intent(dbrand.this, home.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		
 		startActivity(intent);
 		finish();
 		}else{
@@ -687,6 +691,7 @@ public class dbrand extends Activity{
 				Toast.makeText(dbrand.this, "success", Toast.LENGTH_LONG).show();
 			global.setLogin(null);
 			Intent intent = new Intent(dbrand.this, home.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(intent);
 			finish();
 				
