@@ -674,6 +674,10 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 				for(Upload up:uploadList){
 					db.deleteUpload(up.getAge());
 				}
+				brands = db.retriveBrand(preference.getString("product_id", null));
+				for(Brand brand:brands){
+					db.updateBrand(brand, "false");
+				}
 				Editor edit = preference.edit();
 				edit.putString("activity", null);
 				edit.putInt("upload", 2);
