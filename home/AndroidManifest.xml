@@ -8,27 +8,28 @@
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
-		<uses-permission android:name="android.permission.INTERNET"/>
-		<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-		<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-		<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    
+
     <application
-        android:largeHeap="true"
+        android:name=".Global"
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:name=".Global"
-        android:hardwareAccelerated="true"
-        >
-         <!-- android:theme="@android:style/Theme.DeviceDefault"
-         -->
-        
+        android:largeHeap="true" >
+
+<!--  android:theme="@android:style/Theme.DeviceDefault" -->
+
+        <activity android:name=".UserSettingActivity" />
         <activity
-            android:name=".UserSettingActivity" />
-                 <activity
             android:name="com.example.survey_game.MainActivity"
             android:label="@string/app_name" >
-            
         </activity>
         <activity
             android:name="com.example.survey_game.loginnew"
@@ -38,31 +39,27 @@
             android:name="com.example.survey_game.Game.GameActivity"
             android:label="@string/title_activity_login" >
         </activity>
-        <activity android:name="com.example.survey_game.Game.GameEnd">
-            
+        <activity android:name="com.example.survey_game.Game.GameEnd" >
         </activity>
         <activity
             android:name="com.example.survey_game.home"
             android:label="@string/app_name"
             android:uiOptions="splitActionBarWhenNarrow" >
-             <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
-         <activity
+        <activity
             android:name="com.example.survey_game.ProductSelectActivity"
-            android:screenOrientation="portrait"
             android:configChanges="smallestScreenSize|keyboardHidden|orientation"
-            android:label="@string/app_name" >
-           
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.example.survey_game.video.VideoViewDemo"
             android:label="@string/title_activity_tutorial" >
-           
         </activity>
         <activity
             android:name="com.example.survey_game.dbrand"
@@ -76,6 +73,15 @@
             android:name="com.example.survey_game.score"
             android:label="@string/title_activity_score" >
         </activity>
+
+        <receiver android:name="com.example.survey_game.BootReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" >
+                    
+                </action>
+                <category android:name="android.intent.category.HOME" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

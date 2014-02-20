@@ -265,14 +265,16 @@ public class GameEnd extends Activity{
 							public void onClick(DialogInterface arg0, int arg1) {
 								// TODO Auto-generated method stub
 								//db.logoutUser(GameEnd.this, MySQLiteHelper.TABLE_NAME);
-								Editor edit = preference.edit();
+								/*Editor edit = preference.edit();
 								edit.putBoolean("logout", true);
 								edit.commit();
 								db.deleteLogin(preference.getString("uid", null));
 								//db.resetTables(MySQLiteHelper.TABLE_NAME);
 								uploadList = db.retriveUpload(preference.getString("uid", null));
 								finish();
-										
+								*/
+								logout();
+								finish();
 							}
 						});
 				alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {

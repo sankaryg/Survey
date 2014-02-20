@@ -534,6 +534,7 @@ public class dbrand extends Activity{
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		promptAlert = preference.getBoolean("pause", false);
 		if(promptAlert){
 			 if (alertDialog1 != null) {
 					alertDialog1.cancel();
