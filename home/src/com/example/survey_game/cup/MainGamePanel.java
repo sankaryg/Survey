@@ -6,6 +6,7 @@ package com.example.survey_game.cup;
 import java.lang.ref.WeakReference;
 
 import com.example.survey_game.R;
+import com.example.survey_game.Game.GameThread;
 import com.example.survey_game.Util.Constants;
 import com.example.survey_game.cup.model.ElaineAnimated;
 
@@ -188,7 +189,29 @@ public class MainGamePanel extends SurfaceView implements
 		// we can safely start the game loop
 		active = true;
 		thread.setRunning(active);
+		//if(!thread.isAlive()){
+			
+			//thread = new MainThread(holder,this);
+		try{
 		thread.start();
+		}catch(Exception e){
+			e.printStackTrace();
+			//stop();
+		}
+		//}
+			
+		/*	if (!thread.isAlive()) {
+				if (thread.getState() == Thread.State.TERMINATED) {
+					thread = new MainThread(holder,MainGamePanel.this);
+					thread.setRunning(true);
+					thread.start();
+
+				}
+			}else {
+					thread.setRunning(true);
+					thread.start();
+				}
+			*/
 	}
 
 	@Override

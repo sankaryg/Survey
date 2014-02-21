@@ -97,6 +97,7 @@ public class dbrand extends Activity{
 	private File file;
 	private boolean promptAlert;
 	private String activity;
+	private boolean boot;
 	
 	void downloadFile(Brand up, String fileUrl, String fileName) throws URISyntaxException {
 	    // here you can add folder in which you want the image to be stored
@@ -236,6 +237,10 @@ public class dbrand extends Activity{
 		linarView = (LinearLayout) findViewById(R.id.linearLayout1);
 		db = new DBfunction(this);
 		Login log = db.getFirstRecord();
+		boot = preference.getBoolean("boot", false);
+		if(!boot)
+		preference.edit().putBoolean("pause", false).commit();
+		
 		SpannableString content = new SpannableString(getResources().getString(R.string.logout) +" "+log.getName());
 		content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
 		logout.setText(content);
@@ -526,7 +531,10 @@ public class dbrand extends Activity{
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
+		if(!preference.getBoolean("pause_call", false)){
 		preference.edit().putBoolean("pause", true).commit();
+		preference.edit().putBoolean("pause_call", false).commit();
+		}
 		promptAlert = preference.getBoolean("pause", true);
 		super.onPause();
 	}
@@ -535,6 +543,10 @@ public class dbrand extends Activity{
 		// TODO Auto-generated method stub
 		super.onResume();
 		promptAlert = preference.getBoolean("pause", false);
+		if(!preference.getBoolean("pause_call", false)){
+			promptAlert = false;
+			preference.edit().putBoolean("pause_call", true).commit();
+		}
 		if(promptAlert){
 			 if (alertDialog1 != null) {
 					alertDialog1.cancel();

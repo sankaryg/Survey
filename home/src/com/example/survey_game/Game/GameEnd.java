@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -86,6 +87,7 @@ public class GameEnd extends Activity{
 	private AlertDialog alertDialog1;
 	private String activity;
 	private List<Brand> brandsList;
+	private boolean boot;
 	
 	
 	@Override
@@ -96,8 +98,11 @@ public class GameEnd extends Activity{
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		setContentView(R.layout.gamewon);
-						
-	}
+		preference = getSharedPreferences("Survey", MODE_PRIVATE);
+		boot = preference.getBoolean("boot", false);
+		if(!boot)
+		preference.edit().putBoolean("pause", false).commit();
+			}
 	 
 	public void init(){
 		layout = (LinearLayout) findViewById(R.id.bg);
@@ -147,10 +152,10 @@ public class GameEnd extends Activity{
 		/*if(b!= null)
 			screen = b.getString("screen");
 		Log.d(ACTIVITY_SERVICE, screen);*/
-		preference = getSharedPreferences("Survey", MODE_PRIVATE);
 		count = preference.getInt("playMode", 1);
 		uploadLimit = preference.getInt("upload", 1);
 		//count = 1;
+		
 		brand.setVisibility(View.VISIBLE);
 		playAgain = (ImageView)findViewById(R.id.button1);
 		if(count == 2){
@@ -169,6 +174,9 @@ public class GameEnd extends Activity{
 				edit.putInt("playMode", 2);
 				edit.commit();
 				preference.edit().putBoolean("end_a", true).commit();
+				preference.edit().putBoolean("pause", false).commit();
+				preference.edit().putBoolean("pause_call", false).commit();
+				
 				Intent startGame = new Intent(getApplicationContext(), dbrand.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startGame.putExtra("bid", bid);
 				startActivity(startGame);
@@ -188,6 +196,7 @@ public class GameEnd extends Activity{
 					Editor edit = preference.edit();
 					edit.putInt("playMode", ++count);
 					edit.commit();
+					preference.edit().putBoolean("pause", false).commit();
 				Intent startGame = new Intent(getApplicationContext(), GameActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startGame.putExtra("bname", bname+"_"+bid);
 				startGame.putExtra("bid", bid);
@@ -215,6 +224,7 @@ public class GameEnd extends Activity{
 						++br;
 					}
 				}
+				preference.edit().putBoolean("pause", false).commit();
 				br = db.getNoOfBrandPlayed(preference.getString("product_id", "1"));
 				if(br>=2){
 					if(connection.isConnectingToInternet()){
@@ -623,9 +633,9 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
         // Showing Alert Message
        alertDialog.show();
 	}
+	
 	public class Load extends AsyncTask<List<Upload>, Void, String>{
 
-		private ProgressDialog pd;
 		List<Upload> upload = null;
 		@Override
 		protected void onPreExecute() {
@@ -721,6 +731,10 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 		super.onDestroy();
 		unbindDrawables(layout);
 		System.gc();
+		if(pd!=null){
+			pd.cancel();
+			pd = null;
+		}
 		
 	}
 	private void unbindDrawables(View view) {
@@ -740,6 +754,7 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		//init();
 		if(promptAlert){
 			 if (alertDialog1 != null) {
 					alertDialog1.cancel();
@@ -787,13 +802,24 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
+		/*if(coin_rotate!=null){
+			coin_rotate.stop();
+			coin_rotate = null;
+		}**/
+	
 		preference.edit().putBoolean("pause", true).commit();
+		preference.edit().putBoolean("pause_call", false).commit();
 		promptAlert = preference.getBoolean("pause", true);
 		super.onPause();
 	}
 	@Override
 	protected void onRestart() {
 		// TODO Auto-generated method stub
+		/*if(coin_rotate!=null){
+			coin_rotate.stop();
+			coin_rotate = null;
+		}
+		finish();*/
 		promptAlert = true;
 		preference.edit().putBoolean("pause", true).commit();
 		super.onRestart();
@@ -808,6 +834,21 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 		finish();
 		super.onBackPressed();
 	}
-	
+	@Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+       // GameEnd.this.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD);           
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (keyCode == KeyEvent.KEYCODE_HOME) {
+            Toast.makeText(GameEnd.this, "home key", Toast.LENGTH_SHORT).show();
+        }
+       
+        return false;
+    };
 }
 
