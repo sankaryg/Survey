@@ -97,7 +97,7 @@ public class GameEnd extends Activity{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
-		setContentView(R.layout.gamewon);
+		
 		preference = getSharedPreferences("Survey", MODE_PRIVATE);
 		boot = preference.getBoolean("boot", false);
 		if(!boot)
@@ -105,6 +105,7 @@ public class GameEnd extends Activity{
 			}
 	 
 	public void init(){
+		setContentView(R.layout.gamewon);
 		layout = (LinearLayout) findViewById(R.id.bg);
 		connection = new ConnectionDetector(this);
 		global = (Global)getApplicationContext();
@@ -304,90 +305,7 @@ public class GameEnd extends Activity{
 				}
 			}
 		});
-		/*logout = (Button) findViewById(R.id.button3);
-		logout.setOnClickListener(new OnClickListener() {
-			private List<Brand> brands;
-			int br = 1;
-			private List<Upload> uploadList;
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				type ="logout";
-				
-				brands = db.retriveBrand();
-				for(Brand bra:brands){
-					if(bra.getBrandStatus().equals("true")){
-						++br;
-					}
-				}
-				if(br>=2){
-					if(connection.isConnectingToInternet()){
-						uploadList = db.retriveUpload();
-						for(Upload up : uploadList){
-							try{
-							new Load().execute(up);
-							//Thread.sleep(1000);
-							}
-							catch (Exception e) {
-								// TODO: handle exception
-							}
-							}
-					
-						db.logoutUser(GameEnd.this, MySQLiteHelper.TABLE_NAME);
-						db.logoutUser(GameEnd.this, MySQLiteHelper.BRAND_TABLE);
-						db.logoutUser(GameEnd.this, MySQLiteHelper.FEATURE_TABLE);
-						db.logoutUser(GameEnd.this, MySQLiteHelper.CONTRA_TYPE_TABLE);
-						db.logoutUser(GameEnd.this, MySQLiteHelper.COMP_TYPE_TABLE);
-						db.resetTables(MySQLiteHelper.TABLE_NAME);
-						db.resetTables(MySQLiteHelper.server_table);
-						Toast.makeText(GameEnd.this, "success", Toast.LENGTH_LONG).show();
-						if(!type.equals("quit")){
-							Intent startGame = new Intent(getApplicationContext(), loginnew.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-							startActivity(startGame);
-							finish();
-							}
-					}
-					else{
-						alertDialog = new AlertDialog.Builder(GameEnd.this).create();
-						alertDialog.setMessage("Do you want to proceed with offline mode?");
-						alertDialog.setTitle("SurveyGame");
-				        // Setting alert dialog icon
-				        //alertDialog.setIcon((status) ? R.drawable.success : R.drawable.fail);
-				 
-				        // Setting OK Button
-				        alertDialog.setButton(Dialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
-							
-							@Override
-							public void onClick(DialogInterface arg0, int arg1) {
-								// TODO Auto-generated method stub
-								//db.resetTables(MySQLiteHelper.TABLE_NAME);
-								Editor edit = preference.edit();
-								edit.putBoolean("logout", true);
-								edit.commit();
-								Intent startGame = new Intent(getApplicationContext(), loginnew.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-								startActivity(startGame);
-								finish();
-										
-							}
-						});
-				alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-							
-							@Override
-							public void onClick(DialogInterface arg0, int arg1) {
-								// TODO Auto-generated method stub
-								
-							
-							}
-						});
-				        // Showing Alert Message
-				       alertDialog.show();
-						
-					}
-				}else{
-					alert.showAlertDialog(GameEnd.this, "Warning", "You need to select two brand", true);
-				}
-			}
-		});*/
+	
 		brandsList = db.retriveBrand(preference.getString("product_id", "1"));
 		for(Brand brand:brandsList){
 		if(bid.equals(String.valueOf(brand.getBrandId()))){
@@ -398,25 +316,6 @@ public class GameEnd extends Activity{
 	}
 	@SuppressWarnings("unchecked")
 	public void logout(){
-		/*if(connection.isConnectingToInternet()){
-			uploadList = db.retriveUpload();
-				try{
-					new Load().execute(uploadList);
-					}
-					catch (Exception e) {
-						// TODO: handle exception
-					}
-		
-		}else{
-			alert.showAlertDialog(dbrand.this, "SurveyGame", "Check Your network", true);
-		}*/
-		
-			/*brands = db.retriveBrand();
-			for(Brand bra:brands){
-				if(bra.getBrandStatus().equals("true")){
-					++br;
-				}
-			}*/
 		activity = preference.getString("activity", null);
 			uploadList = db.retriveUpload(preference.getString("uid", null));
 			List<Login> Offlinelogin = db.retriveUsers();
@@ -444,19 +343,8 @@ public class GameEnd extends Activity{
 						global.setLogin(null);
 				Toast.makeText(GameEnd.this, "success", Toast.LENGTH_LONG).show();
 				finish();
-					}/*else{
-						Constants.name = preference.getString("name", null);
-						Constants.age = preference.getString("age", null);
-						Constants.gender = preference.getString("gender", null);
-						if(Constants.name!=null && Constants.age!=null && Constants.gender !=null)
-							new InsertData().execute();
-							else
-							alert.showAlertDialog(dbrand.this, "Warning", "You are not logged in and no data to upload", true);
-
-						
-
 					}
-*/					}
+					}
 				else{
 					Editor edit = preference.edit();
 					edit.putInt("upload", 2);
@@ -475,12 +363,7 @@ public class GameEnd extends Activity{
 					finish();
 					//alert.showAlertDialog(dbrand.this, "Warning", "Check your network connection", true);
 				}
-			//}
-			//}else{
-								
-				
-				//}
-			
+						
 	}
 	class InsertData extends AsyncTask<List<Login>, Void, String>{
 		@Override
@@ -713,7 +596,7 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 		// TODO Auto-generated method stub
 		super.onStart();
 		//setContentView(layout);
-		init();
+		//init();
 
 	}
 	@Override
@@ -754,7 +637,7 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		//init();
+		init();
 		if(promptAlert){
 			 if (alertDialog1 != null) {
 					alertDialog1.cancel();
@@ -802,10 +685,10 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
-		/*if(coin_rotate!=null){
+		if(coin_rotate!=null){
 			coin_rotate.stop();
 			coin_rotate = null;
-		}**/
+		}
 	
 		preference.edit().putBoolean("pause", true).commit();
 		preference.edit().putBoolean("pause_call", false).commit();
@@ -844,11 +727,11 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-        if (keyCode == KeyEvent.KEYCODE_HOME) {
+        /*if (keyCode == KeyEvent.KEYCODE_HOME) {
             Toast.makeText(GameEnd.this, "home key", Toast.LENGTH_SHORT).show();
-        }
+        }*/
        
-        return false;
+        return true;
     };
 }
 
