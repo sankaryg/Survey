@@ -842,7 +842,7 @@ public class dbrand extends Activity{
 			//preference.edit().putBoolean("abc", true).commit();
 		br = db.getNoOfBrandPlayed(preference.getString("product_id", "1"));
 		
-		/*if(preference.getBoolean("end_a", true))
+		/*if(preference.getBoolean("end_a", true)) 
 		br = br+1;*/
 			/*for(Brand brand:brands){
 			if(brand.getBrandStatus().equals("true")){
