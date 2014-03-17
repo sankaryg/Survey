@@ -35,8 +35,12 @@ public class DBfunction {
 	}
 
 	public void close() {
+		try{
 		dbHelper.close();
-	}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		}
 	
 	public boolean resetTables(String table_name) {
 		// TODO Auto-generated method stub
@@ -371,16 +375,20 @@ public class DBfunction {
 
 	public int getNoOfBrandPlayed(String product_id) {
 		String sta = "true";
+		Cursor id = null;
 		open();
 		try{
 		String query = "select count(*) from " + MySQLiteHelper.BRAND_TABLE + " where status = '"+sta+"' AND product_id = "+product_id;
-		Cursor id = database.rawQuery(query, null);
+		id = database.rawQuery(query, null);
 		id.moveToFirst();
 		rows = id.getInt(0);
 		id.close();
 		}catch (Exception e) {
 			// TODO: handle exception
+			if(id!=null)
+			id.close();
 			e.printStackTrace();
+			rows=0;
 		}finally{
 			close();
 		}

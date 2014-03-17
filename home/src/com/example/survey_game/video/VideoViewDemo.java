@@ -2,6 +2,7 @@ package com.example.survey_game.video;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
@@ -31,6 +32,7 @@ public class VideoViewDemo extends Activity {
     private VideoView mVideoView;
 	private ShowAlert showAlert;
 	private ImageView skip;
+	private SharedPreferences preference;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -39,12 +41,16 @@ public class VideoViewDemo extends Activity {
         mVideoView = (VideoView) findViewById(R.id.videoView1);
         showAlert = new ShowAlert(this);
         skip=(ImageView)findViewById(R.id.skip);
+        preference = getSharedPreferences("Survey", MODE_PRIVATE);
+		
 		skip.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent i=new Intent(getBaseContext(),dbrand.class);
+				preference.edit().putBoolean("log", true).commit();
+				
 				startActivity(i);
 				finish();
 			}
@@ -72,6 +78,8 @@ public class VideoViewDemo extends Activity {
 						public void onCompletion(MediaPlayer mp) {
 							// TODO Auto-generated method stub
 							Intent i=new Intent(getBaseContext(),dbrand.class);
+							preference.edit().putBoolean("log", true).commit();
+							
 							startActivity(i);
 							finish();
 						}

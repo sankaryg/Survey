@@ -29,6 +29,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.example.survey_game.R;
+import com.example.survey_game.dbrand;
 import com.example.survey_game.GIF.GifDecoderView;
 import com.example.survey_game.Util.Constants;
 import com.example.survey_game.cup.MainGamePanel;
@@ -93,7 +94,7 @@ public class GameActivity extends Activity {
 		uid = preference.getString("uid", null);
 		pid = preference.getString("pid", null);
 		Log.d("check", bid + "_" + bname + "+game");
-
+		Constants.context = GameActivity.this;
 		initializeMedia();
 		Log.d(ACTIVITY_SERVICE, width + "_" + height);
 
@@ -117,10 +118,16 @@ public class GameActivity extends Activity {
 		//
 
 		//if(!preference.getBoolean("restart", false)){
+		if(game==null || preference.getBoolean("restart", false)){
 		game = new GameView(bid, bname, GameActivity.this, this, width, height,
 				uid, pid);
 		// setContentView(R.layout.activity_main_xml);
 		setContentView(game);
+		}
+		else if(game!=null){
+			//game.stop();
+			game.resume();
+		}
 		//}
 		/* game.init(bid,bname,GameActivity.this,this,width,height,uid,pid); */
 	}
@@ -142,7 +149,7 @@ public class GameActivity extends Activity {
 			 if (alertDialog != null) {
 			alertDialog.cancel();
 			alertDialog = new AlertDialog.Builder(GameActivity.this).create();
-			alertDialog.setMessage("Do u really want to close?");
+			alertDialog.setMessage("Do you really want to close?");
 			alertDialog.setTitle("EXIT");
 			// Setting alert dialog icon
 			// alertDialog.setIcon((status) ? R.drawable.success :
@@ -159,6 +166,7 @@ public class GameActivity extends Activity {
 							// game.timer.setPaused(false);
 							// game.timer.onFinish();
 							// game.timer.cancel();
+							preference.edit().putBoolean("pause", true).commit();
 							game.stop();
 							finish();
 
@@ -215,7 +223,7 @@ public class GameActivity extends Activity {
 			}	
 			alertDialog = new AlertDialog.Builder(GameActivity.this).create();
 			alertDialog.setCancelable(false);
-			alertDialog.setMessage("Do u really want to close?");
+			alertDialog.setMessage("Do you really want to close?");
 			alertDialog.setTitle("EXIT");
 			// Setting alert dialog icon
 			// alertDialog.setIcon((status) ? R.drawable.success :
@@ -232,6 +240,8 @@ public class GameActivity extends Activity {
 							// game.timer.setPaused(false);
 							// game.timer.onFinish();
 							// game.timer.cancel();
+							preference.edit().putBoolean("pause", true).commit();
+							
 							game.stop();
 							finish();
 

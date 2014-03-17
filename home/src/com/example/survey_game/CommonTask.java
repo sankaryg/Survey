@@ -331,7 +331,7 @@ public class CommonTask extends AsyncTask<String, Void, JSONObject>{
 */				//alert.showAlertDialog(loginnew.this, "Success", "Inserted Successfully", true);
 			}else
 			{
-				alert.showAlertDialog(activity, "Error", "Failure", true);
+				alert.showAlertDialog(activity, "Error", "Failure", true,null);
 				/*Editor edit = preference.edit();
 				global.setLogin(null);
 				Log.d("abc_login", service.getUser_id()+"_"+service.getProduct_id());

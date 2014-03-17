@@ -90,6 +90,7 @@ public class home extends Activity{
 				preference.edit().putBoolean("end_a", false).commit();
 				if(activity!=null){
 					Intent i=new Intent(getBaseContext(),dbrand.class);
+					preference.edit().putBoolean("log", true).commit();
 					startActivity(i);
 					finish();
 				}
@@ -240,12 +241,12 @@ public class home extends Activity{
 			//finish();
 				}
 					else{
-						alert.showAlertDialog(home.this, "Survey", "No data to upload", true);	
+						alert.showAlertDialog(home.this, "Survey", "No data to upload", true,null);	
 					}
 				}
 			}
 			else{
-				alert.showAlertDialog(home.this, "Warning", "Check your network connection", true);
+				alert.showAlertDialog(home.this, "Warning", "Check your network connection", true,null);
 			}
 		/*}else{
 			alert.showAlertDialog(home.this, "Warning", "You need to play atleast two brand", true);
@@ -430,13 +431,13 @@ public class home extends Activity{
 		
 			}
 		else{
-			alert.showAlertDialog(home.this, "Warning", "Check your network connection", true);
+			alert.showAlertDialog(home.this, "Warning", "Check your network connection", true,null);
 		}
 
 		}
 		//finish();
 		}else{
-			alert.showAlertDialog(home.this, "Error", "Unable to process server", true);
+			alert.showAlertDialog(home.this, "Error", "Unable to process server", true,"finish");
 		}
 	}
 	}	
@@ -466,7 +467,7 @@ public class home extends Activity{
 				Toast.makeText(home.this, "success", Toast.LENGTH_LONG).show();
 				}
 				else{
-					alert.showAlertDialog(home.this, "Warning", "Check your network connection", true);
+					alert.showAlertDialog(home.this, "Warning", "Check your network connection", true,null);
 				}
 			}
 		});
@@ -581,7 +582,7 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 			//finish();
 			}else{
 				try{
-				alert.showAlertDialog(home.this, "Error", "Unable to process server", true);
+				alert.showAlertDialog(home.this, "Error", "Unable to process server", true,"finish");
 				}
 				catch (Exception e) {
 					// TODO: handle exception

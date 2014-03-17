@@ -5,10 +5,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Environment;
 
 import com.example.survey_game.R;
+import com.example.survey_game.dbrand;
 import com.example.survey_game.entity.ExtensionFilter;
 
 public class Constants {
@@ -34,6 +36,7 @@ public class Constants {
 	public static String endScreen = "rookie";
 	public static HashMap<String, String> storeImage;// = new HashMap<String,
 														// Bitmap>();
+	public static Activity context = null;
 	public static String imagePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "images";
 
 	public static List<File> listFiles() {

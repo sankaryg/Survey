@@ -109,6 +109,7 @@ public class loginnew extends Activity implements OnClickListener{
 		    activity = preference.getString("activity", null);
 			if(br1>1 && activity!=null && !checkLogin){
 				global.setLogin(log);
+				preference.edit().putBoolean("log", true).commit();
 				
 				Intent i=new Intent(getBaseContext(),dbrand.class);
 				startActivity(i);
@@ -214,10 +215,10 @@ public class loginnew extends Activity implements OnClickListener{
 							if(br>1 && download == 0)
 							showAlert();
 							else if(download ==1)
-								alert.showAlertDialog(loginnew.this, "Survey Game"	, "Product not yet downloaded ", true);
+								alert.showAlertDialog(loginnew.this, "Survey Game"	, "Product not yet downloaded ", true,null);
 
 							else 
-							alert.showAlertDialog(loginnew.this, "Survey Game"	, "Please initialize by playing at least one game online ", true);
+							alert.showAlertDialog(loginnew.this, "Survey Game"	, "Please initialize by playing at least one game online ", true,null);
 						}
 					}
 				
@@ -250,6 +251,7 @@ public class loginnew extends Activity implements OnClickListener{
 					login.setAge(Integer.parseInt(age_ed.getText().toString().trim()));
 					login.setGender(n);
 					login.setStatus(true);
+					preference.edit().putBoolean("log", true).commit();
 					
 					preference.edit().putString("name", name_ed.getText().toString()).commit();
 					preference.edit().putString("age", age_ed.getText().toString().trim()).commit();
@@ -591,7 +593,7 @@ public class loginnew extends Activity implements OnClickListener{
 						//alert.showAlertDialog(loginnew.this, "Success", "Inserted Successfully", true);
 					}else
 					{
-						alert.showAlertDialog(loginnew.this, "Error", "Failure", true);
+						alert.showAlertDialog(loginnew.this, "Error", "Failure", true,"finish");
 						Editor edit = preference.edit();
 						global.setLogin(null);
 						Log.d("abc_login", service.getUser_id()+"_"+service.getProduct_id());

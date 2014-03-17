@@ -43,6 +43,7 @@ import com.example.survey_game.Global;
 import com.example.survey_game.MySQLiteHelper;
 import com.example.survey_game.R;
 import com.example.survey_game.dbrand;
+import com.example.survey_game.home;
 import com.example.survey_game.loginnew;
 import com.example.survey_game.GIF.GifDecoderView;
 import com.example.survey_game.Util.AnimationView;
@@ -97,7 +98,7 @@ public class GameEnd extends Activity{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
-		
+		Constants.context = GameEnd.this;
 		preference = getSharedPreferences("Survey", MODE_PRIVATE);
 		boot = preference.getBoolean("boot", false);
 		if(!boot)
@@ -301,7 +302,7 @@ public class GameEnd extends Activity{
 				       alertDialog.show();
 					}
 				}else{
-					alert.showAlertDialog(GameEnd.this, "Survey Game", "Please play at least another brand before you quit", true);
+					alert.showAlertDialog(GameEnd.this, "Survey Game", "Please play at least another brand before you quit", true,null);
 				}
 			}
 		});
@@ -474,13 +475,30 @@ public class GameEnd extends Activity{
 		
 			}
 		else{
-			alert.showAlertDialog(GameEnd.this, "Warning", "Check your network connection", true);
+			alert.showAlertDialog(GameEnd.this, "Warning", "Check your network connection", true,"finish");
 		}
 
 		}
 		finish();
 		}else{
-			alert.showAlertDialog(GameEnd.this, "Error", "Unable to process server", true);
+			alert.showAlertDialog(GameEnd.this, "Error", "Unable to process server", true,"finish");
+			Editor edit = preference.edit();
+			edit.putBoolean("logout", true);
+			edit.putInt("upload", 2);
+			edit.putInt("playMode", 2);
+			if(connection.isConnectingToInternet())
+			edit.putString("activity", null);
+			//edit.clear();
+			
+			edit.commit();
+			brands = db.retriveBrand(preference.getString("product_id", "1"));
+			for(Brand brand:brands){
+				db.updateBrand(brand, "false");
+			}
+			db.deleteLogin(preference.getString("uid", null));
+			db.deleteUpload(preference.getString("uid", null));
+			
+		global.setLogin(null);
 		}
 	}
 	}	
@@ -582,7 +600,29 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 			finish();
 			}else{
 				try{
-				alert.showAlertDialog(GameEnd.this, "Error", "Unable to process server", true);
+					if(result == null)
+				alert.showAlertDialog(GameEnd.this, "Error", "Unable to process server", true,"finish");
+				Editor edit = preference.edit();
+				edit.putBoolean("logout", true);
+				edit.putInt("upload", 2);
+				edit.putInt("playMode", 2);
+				if(connection.isConnectingToInternet())
+				edit.putString("activity", null);
+				//edit.clear();
+				
+				edit.commit();
+				brands = db.retriveBrand(preference.getString("product_id", "1"));
+				for(Brand brand:brands){
+					db.updateBrand(brand, "false");
+				}
+				db.deleteLogin(preference.getString("uid", null));
+				db.deleteUpload(preference.getString("uid", null));
+				
+			global.setLogin(null);
+			Intent intent = new Intent(GameEnd.this, home.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+        	finish();
 				}
 				catch (Exception e) {
 					// TODO: handle exception
@@ -606,6 +646,14 @@ alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnCl
 		if(coin_rotate!=null){
 			coin_rotate.stop();
 			coin_rotate=null;
+		}
+		if(alertDialog!=null){
+			alertDialog.cancel();
+			alertDialog=null;
+		}
+		if(alertDialog1!=null){
+			alertDialog1.cancel();
+			alertDialog1=null;
 		}
 	}
 	@Override

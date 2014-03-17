@@ -75,7 +75,7 @@ public class ProductSelectActivity extends Activity implements
 		else if (products.size() <= 0)
 			if (!connection.isConnectingToInternet()) {
 				alert.showAlertDialog(ProductSelectActivity.this,
-						"Survey Game", "No network", true);
+						"Survey Game", "No network", true,"finish");
 
 			} else
 				new InsertData().execute();
@@ -138,14 +138,14 @@ public class ProductSelectActivity extends Activity implements
 							new InsertData().execute();
 						else
 							alert.showAlertDialog(ProductSelectActivity.this,
-									"Survey Game", "No network", true);
+									"Survey Game", "No network", true,"finish");
 
 					} else
 
 					if (products.size() <= 0)
 						if (!connection.isConnectingToInternet()) {
 							alert.showAlertDialog(ProductSelectActivity.this,
-									"Survey Game", "No network", true);
+									"Survey Game", "No network", true,"finish");
 
 						} else
 							new InsertData().execute();
@@ -262,7 +262,8 @@ public class ProductSelectActivity extends Activity implements
 
 			} else
 				alert.showAlertDialog(ProductSelectActivity.this,
-						"Survey Game", "Unable to connect server", true);
+						"Survey Game", "Unable to connect server", true,"finish");
+			
 		}
 	}
 

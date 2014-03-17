@@ -98,7 +98,7 @@ public class dbrand extends Activity{
 	private boolean promptAlert;
 	private String activity;
 	private boolean boot;
-	
+	public static boolean check=true;
 	void downloadFile(Brand up, String fileUrl, String fileName) throws URISyntaxException {
 	    // here you can add folder in which you want the image to be stored
 		String extStorageDirectory = null;
@@ -216,6 +216,7 @@ public class dbrand extends Activity{
 		logout = (TextView)findViewById(R.id.textView1);
 		logout.setVisibility(View.GONE);
 		grid = (GridView) findViewById(R.id.scrollView1);
+		Constants.context = null;
 		//tf = Typeface.createFromAsset(getAssets(),"Oxida Regular.ttf");
 		//quit = (ImageView)findViewById(R.id.exit);
 		logout.setOnClickListener(new OnClickListener() {
@@ -227,7 +228,7 @@ public class dbrand extends Activity{
 				if(br>=2)
 				logout();
 				else
-					alert.showAlertDialog(dbrand.this, "Survey Game", "Please play at least two brand before log out", true);
+					alert.showAlertDialog(dbrand.this, "Survey Game", "Please play at least two brands before log out", true,null);
 			}
 		});
 		
@@ -238,13 +239,15 @@ public class dbrand extends Activity{
 		db = new DBfunction(this);
 		Login log = db.getFirstRecord();
 		boot = preference.getBoolean("boot", false);
-		if(!boot)
-		preference.edit().putBoolean("pause", false).commit();
+		preference.edit().putBoolean("pause", true).commit();
+		/*if(!boot)
+		preference.edit().putBoolean("pause", false).commit();*/
 		
 		SpannableString content = new SpannableString(getResources().getString(R.string.logout) +" "+log.getName());
 		content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
 		logout.setText(content);
-		
+		alertDialog1 = new AlertDialog.Builder(dbrand.this).create();
+		alertDialog = new AlertDialog.Builder(dbrand.this).create();
 		connection = new ConnectionDetector(this);
 		if(getIntent().getExtras()!=null){
 	        
@@ -260,7 +263,7 @@ public class dbrand extends Activity{
 		brands = db.retriveBrand(preference.getString("product_id", "1"));
 		alert = new ShowAlert(this);
 		
-		
+		check = true;
 		
 		Log.d("check", brands+"_");
 		Collections.shuffle(brands);
@@ -504,7 +507,7 @@ public class dbrand extends Activity{
 		
 			}
 		else{
-			alert.showAlertDialog(dbrand.this, "Warning", "Check your network connection", true);
+			alert.showAlertDialog(dbrand.this, "Warning", "Check your network connection", true,null);
 		}
 
 		}
@@ -514,7 +517,24 @@ public class dbrand extends Activity{
 		startActivity(intent);
 		finish();
 		}else{
-			alert.showAlertDialog(dbrand.this, "Error", "Unable to process server", true);
+			alert.showAlertDialog(dbrand.this, "Error", "Unable to process server", true,"finish");
+			Editor edit = preference.edit();
+			edit.putBoolean("logout", true);
+			edit.putInt("upload", 2);
+			edit.putInt("playMode", 2);
+			if(connection.isConnectingToInternet())
+			edit.putString("activity", null);
+			//edit.clear();
+			
+			edit.commit();
+			brands = db.retriveBrand(preference.getString("product_id", "1"));
+			for(Brand brand:brands){
+				db.updateBrand(brand, "false");
+			}
+			db.deleteLogin(preference.getString("uid", null));
+			db.deleteUpload(preference.getString("uid", null));
+			
+		global.setLogin(null);
 		}
 	}
 	}	
@@ -522,6 +542,8 @@ public class dbrand extends Activity{
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
+		// showAlert();
+		//showAlert(preference.getBoolean("log", false));
 	}
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -535,25 +557,31 @@ public class dbrand extends Activity{
 		preference.edit().putBoolean("pause", true).commit();
 		preference.edit().putBoolean("pause_call", false).commit();
 		}
-		promptAlert = preference.getBoolean("pause", true);
+		//promptAlert = preference.getBoolean("pause", true);
 		super.onPause();
 	}
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		promptAlert = preference.getBoolean("pause", false);
-		if(!preference.getBoolean("pause_call", false)){
+		showAlert(preference.getBoolean("log", false));
+	}
+	private void showAlert(boolean b){
+		//if(check){
+		promptAlert = b;//preference.getBoolean("pause", b);
+		/*if(!preference.getBoolean("pause_call", false)){
 			promptAlert = false;
 			preference.edit().putBoolean("pause_call", true).commit();
-		}
+		}*/
 		if(promptAlert){
-			 if (alertDialog1 != null) {
-					alertDialog1.cancel();
+			 if (alertDialog != null) {
+					alertDialog.dismiss();
 			 }
 			 //else
 			 {
-					alertDialog1 = new AlertDialog.Builder(dbrand.this).create();
+				 if(alertDialog1 == null)
+					 alertDialog1 = new AlertDialog.Builder(dbrand.this).create();
+					
 					alertDialog1.setMessage("Are you "+db.getFirstRecord().getName()+"? Yes to proceed. No to Logout");
 					alertDialog1.setTitle("EXIT");
 					// Setting alert dialog icon
@@ -568,7 +596,7 @@ public class dbrand extends Activity{
 								public void onClick(DialogInterface arg0, int arg1) {
 									// TODO Auto-generated method stub
 									alertDialog1.cancel();
-
+									check = false;
 								}
 							});
 					alertDialog1.setButton(Dialog.BUTTON_NEGATIVE, "NO",
@@ -578,6 +606,7 @@ public class dbrand extends Activity{
 								public void onClick(DialogInterface arg0, int arg1) {
 									alertDialog1.cancel();
 									logout();
+									check=false;
 								}
 							});
 					// Showing Alert Message
@@ -585,18 +614,19 @@ public class dbrand extends Activity{
 			//alert.showAlertDialog(dbrand.this, "SurveyGame", "Check Your network", true);
 			Toast.makeText(dbrand.this, "User Verification", Toast.LENGTH_SHORT).show();
 			preference.edit().putBoolean("pause", false).commit();
-			promptAlert = false;
+			//promptAlert = false;
 		}
 		
 		}
 		{
 			showAll();
 		}
+		//}
 	}
 	@Override
 	protected void onRestart() {
 		// TODO Auto-generated method stub
-		promptAlert = true;
+		//promptAlert = true;
 		preference.edit().putBoolean("pause", true).commit();
 		super.onRestart();
 	}
@@ -623,7 +653,14 @@ public class dbrand extends Activity{
 			pd.dismiss();
 			pd.cancel();
 		}
-		
+		if(alertDialog!=null){
+			alertDialog.cancel();
+			alertDialog=null;
+		}
+		if(alertDialog1!=null){
+			alertDialog1.cancel();
+			alertDialog1=null;
+		}
 	}
 	private ProgressDialog pd;
 	public class Load extends AsyncTask<List<Upload>, Void, String>{
@@ -649,6 +686,7 @@ public class dbrand extends Activity{
 			UserFunction user = new UserFunction();
 			String str = null;
 			upload = arg0[0]; 
+			if(upload.size()>0){
 			for(Upload up:upload){
 			try{
 				
@@ -663,6 +701,9 @@ public class dbrand extends Activity{
 				db.deleteUpload(up);*/
 				
 			}
+			}
+			}else{
+				str="failed";
 			}
 			return str;
 		}
@@ -710,7 +751,30 @@ public class dbrand extends Activity{
 				
 			}else{
 				try{
-				alert.showAlertDialog(dbrand.this, "Error", "Unable to process server", true);
+				if(result==null){	
+				alert.showAlertDialog(dbrand.this, "Error", "Unable to process server", true,"finish");
+				}
+				Editor edit = preference.edit();
+				edit.putBoolean("logout", true);
+				edit.putInt("upload", 2);
+				edit.putInt("playMode", 2);
+				if(connection.isConnectingToInternet())
+				edit.putString("activity", null);
+				//edit.clear();
+				
+				edit.commit();
+				brands = db.retriveBrand(preference.getString("product_id", "1"));
+				for(Brand brand:brands){
+					db.updateBrand(brand, "false");
+				}
+				db.deleteLogin(preference.getString("uid", null));
+				db.deleteUpload(preference.getString("uid", null));
+				
+			global.setLogin(null);
+			Intent intent = new Intent(dbrand.this, home.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+        	finish();
 				}
 				catch (Exception e) {
 					// TODO: handle exception
@@ -772,7 +836,9 @@ public class dbrand extends Activity{
 			if(result != null){// && result.equals("success")){
 				adapter = new BrandAdapter(dbrand.this, R.layout.grid_item, brands,Constants.storeImage,play,bid);
 				grid.setAdapter(adapter);
+			
 			}
+			showAlert(preference.getBoolean("log", false));
 		}
 	}
 	@Override
@@ -854,16 +920,23 @@ public class dbrand extends Activity{
 		noOfButton = brands.size();//db.getNoOfRows();
 		if(noOfButton == br){
 			if(alertDialog1!=null)
-				alertDialog1.cancel();
-			alertDialog = new AlertDialog.Builder(dbrand.this).create();
+				alertDialog1.dismiss();
+			/*alertDialog1 = new AlertDialog.Builder(dbrand.this).create();
+			 * 
+			*/
+			if(alertDialog == null)
+				alertDialog = new AlertDialog.Builder(dbrand.this).create();
+			
 			alertDialog.setMessage("Thank you for playing all the brands!");
 			alertDialog.setTitle("SurveyGame");
-	        
-	        alertDialog.setButton(Dialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+			alertDialog.setCancelable(false);
+			Log.d("check","alert restart"+ br+"_"+noOfButton);
+			alertDialog.setButton(Dialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
 				
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
 					// TODO Auto-generated method stub
+					check = false;
 					/*if(connection.isConnectingToInternet()){
 						uploadList = db.retriveUpload(preference.getString("uid", null));
 							try{
@@ -881,7 +954,7 @@ public class dbrand extends Activity{
 				}
 			});
 	
-	       alertDialog.show();
+			alertDialog.show();
 	}
 	//else{
 		//alert.showAlertDialog(dbrand.this, "SurveyGame", "Check Your network "+br +"_"+noOfButton, true);
