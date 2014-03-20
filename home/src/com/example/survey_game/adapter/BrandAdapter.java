@@ -143,6 +143,7 @@ public class BrandAdapter extends ArrayAdapter<Brands>{
 			public void onClick(View v) {
 				if(optionList.get(position).getBrandStatus().equals("false")){
 				Intent i=new Intent(context,GameActivity.class);
+				i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				i.putExtra("bname", optionList.get(position).getBrandName()+"_"+ optionList.get(position).getBrandId());
 				i.putExtra("brandid", optionList.get(position).getBrandId());
 				context.startActivity(i);

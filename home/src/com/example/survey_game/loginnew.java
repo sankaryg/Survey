@@ -251,7 +251,7 @@ public class loginnew extends Activity implements OnClickListener{
 					login.setAge(Integer.parseInt(age_ed.getText().toString().trim()));
 					login.setGender(n);
 					login.setStatus(true);
-					preference.edit().putBoolean("log", true).commit();
+					//preference.edit().putBoolean("log", true).commit();
 					
 					preference.edit().putString("name", name_ed.getText().toString()).commit();
 					preference.edit().putString("age", age_ed.getText().toString().trim()).commit();

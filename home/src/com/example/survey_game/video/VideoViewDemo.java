@@ -49,7 +49,7 @@ public class VideoViewDemo extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent i=new Intent(getBaseContext(),dbrand.class);
-				preference.edit().putBoolean("log", true).commit();
+				//preference.edit().putBoolean("log", true).commit();
 				
 				startActivity(i);
 				finish();
@@ -70,7 +70,7 @@ public class VideoViewDemo extends Activity {
 				@Override
 				public void surfaceCreated(SurfaceHolder holder) {
 					// TODO Auto-generated method stub
-					mVideoView.setVideoURI(Uri.parse("android.resource://com.example.survey_game/"+R.raw.trailer13gp));
+					mVideoView.setVideoURI(Uri.parse("android.resource://com.example.survey_game/"+R.raw.trailer13gp_old));
 		            mVideoView.playSoundEffect(SoundEffectConstants.CLICK)	;	
 		            mVideoView.setOnCompletionListener(new OnCompletionListener() {
 						
@@ -78,7 +78,7 @@ public class VideoViewDemo extends Activity {
 						public void onCompletion(MediaPlayer mp) {
 							// TODO Auto-generated method stub
 							Intent i=new Intent(getBaseContext(),dbrand.class);
-							preference.edit().putBoolean("log", true).commit();
+							//preference.edit().putBoolean("log", true).commit();
 							
 							startActivity(i);
 							finish();
@@ -122,7 +122,7 @@ public class VideoViewDemo extends Activity {
                   } else {
 
            
-            mVideoView.setVideoURI(Uri.parse("android.resource://com.video/"+R.raw.trailer13gp));
+            mVideoView.setVideoURI(Uri.parse("android.resource://com.video/"+R.raw.trailer13gp_old));
             mVideoView.setMediaController(new MediaController(this));
            
             mVideoView.requestFocus();

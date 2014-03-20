@@ -557,6 +557,7 @@ public class dbrand extends Activity{
 		preference.edit().putBoolean("pause", true).commit();
 		preference.edit().putBoolean("pause_call", false).commit();
 		}
+		preference.edit().putBoolean("log", true).commit();
 		//promptAlert = preference.getBoolean("pause", true);
 		super.onPause();
 	}
@@ -628,6 +629,7 @@ public class dbrand extends Activity{
 		// TODO Auto-generated method stub
 		//promptAlert = true;
 		preference.edit().putBoolean("pause", true).commit();
+		preference.edit().putBoolean("log", true).commit();
 		super.onRestart();
 	}
 		private void unbindDrawables(View view) {

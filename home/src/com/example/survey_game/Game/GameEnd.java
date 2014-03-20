@@ -178,7 +178,7 @@ public class GameEnd extends Activity{
 				preference.edit().putBoolean("end_a", true).commit();
 				preference.edit().putBoolean("pause", false).commit();
 				preference.edit().putBoolean("pause_call", false).commit();
-				
+				preference.edit().putBoolean("log", false).commit();
 				Intent startGame = new Intent(getApplicationContext(), dbrand.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startGame.putExtra("bid", bid);
 				startActivity(startGame);
